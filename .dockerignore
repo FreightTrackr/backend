@@ -1,0 +1,12 @@
+# Ignore the binary
+main
+
+# Ignore the Dockerfile and .dockerignore files
+Dockerfile
+.dockerignore
+
+# Ignore the environment file
+.env
+
+# Ignore the vendor directory
+vendor/
