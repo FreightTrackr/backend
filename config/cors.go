@@ -34,10 +34,9 @@ var Cors = cors.Config{
 }
 
 var CorsAllowAll = cors.Config{
-	AllowOrigins:     "*",
-	AllowHeaders:     strings.Join(headers, ","),
-	AllowMethods:     "GET, POST, PUT, PATCH, DELETE",
-	ExposeHeaders:    "Content-Length",
-	AllowCredentials: true,
-	MaxAge:           int((2 * time.Hour).Seconds()),
+	AllowOrigins:  "*",
+	AllowHeaders:  strings.Join(headers, ","),
+	AllowMethods:  "GET, POST, PUT, PATCH, DELETE",
+	ExposeHeaders: "Content-Length",
+	MaxAge:        int((2 * time.Hour).Seconds()),
 }
