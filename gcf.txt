@@ -1,0 +1,37 @@
+package gcf
+
+import (
+	"net/http"
+
+	"github.com/FreightTrackr/backend/config"
+	"github.com/FreightTrackr/backend/routes"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/adaptor"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+)
+
+func init() {
+	functions.HTTP("Befous", Befous)
+}
+
+func Befous(w http.ResponseWriter, r *http.Request) {
+	InitRoutes(w, r)
+}
+
+func InitRoutes(w http.ResponseWriter, r *http.Request) {
+	app := fiber.New()
+
+	app.Use(cors.New(config.Cors))
+
+	routes.UserRoute(app)
+	routes.TransaksiRoute(app)
+	routes.KantorRoute(app)
+	routes.PelangganRoute(app)
+
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
+
+	adaptor.FiberApp(app)(w, r)
+}
