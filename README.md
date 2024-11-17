@@ -9,6 +9,7 @@ git push origin main v1.0.0
 go list -m github.com/FreightTrackr/backend@v1.0.0
 
 docker build -t freight-trackr-backend .
+docker run --name nama-container -d --env-file .env -p 3000:3000 freight-trackr-backend
 gcloud init
 
 Pick configuration to use:
