@@ -22,7 +22,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o main .
 # Final stage
 FROM alpine:latest
 
-FROM scratch
+WORKDIR /root/
 
 COPY --from=builder /app/main .
 
