@@ -1,5 +1,5 @@
 # Gunakan image Go sebagai base image
-FROM golang:1.21.3-alpine
+FROM golang:1.21.3-alpine AS builder
 
 # Install dependencies yang diperlukan
 RUN apk add --no-cache git
@@ -17,13 +17,13 @@ RUN go mod download
 COPY . .
 
 # Build aplikasi
-RUN go build -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o main .
 
-# Ekspose port untuk aplikasi
-EXPOSE 3000
+# Final stage
+FROM alpine:latest
 
-# Tentukan entrypoint dan command
-ENTRYPOINT ["/app/main"]
+WORKDIR /root/
 
-# Menggunakan port dari environment variable yang diatur oleh Cloud Run
-CMD ["-port", "3000"]
+COPY --from=builder /app/main .
+
+CMD ["./main"]

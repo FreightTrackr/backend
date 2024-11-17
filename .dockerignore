@@ -12,3 +12,7 @@ Dockerfile
 vendor/
 
 gcf.txt
+.git
+build
+bin
+dist
