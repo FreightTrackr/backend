@@ -22,6 +22,12 @@ func AmbilSemuaTransaksi(c *fiber.Ctx) error {
 			Message: "GetAllDoc error: " + err.Error(),
 		})
 	}
+	if datatransaksi == nil {
+		return c.Status(fiber.StatusNotFound).JSON(models.Pesan{
+			Status:  fiber.StatusNotFound,
+			Message: "Data transaksi tidak ditemukan",
+		})
+	}
 	return c.Status(fiber.StatusOK).JSON(models.Pesan{
 		Status:     fiber.StatusOK,
 		Message:    "Berhasil ambil data",

@@ -21,6 +21,12 @@ func AmbilSemuaKantor(c *fiber.Ctx) error {
 			Message: "GetAllDoc error: " + err.Error(),
 		})
 	}
+	if datakantor == nil {
+		return c.Status(fiber.StatusNotFound).JSON(models.Pesan{
+			Status:  fiber.StatusNotFound,
+			Message: "Data kantor tidak ditemukan",
+		})
+	}
 	return c.Status(fiber.StatusOK).JSON(models.Pesan{
 		Status:     fiber.StatusOK,
 		Message:    "Berhasil ambil data",

@@ -11,7 +11,7 @@ import (
 func TestRegisterDummyUsers(t *testing.T) {
 	config.LoadEnv("../.env")
 	mconn := utils.SetConnection()
-	apalah, err := utils.DummyUserGenerator(100, mconn)
+	apalah, err := utils.DummyUserGenerator(50, mconn)
 	if err != nil {
 		t.Fatalf("Error generating dummy users: %v", err)
 	}
@@ -39,7 +39,7 @@ func TestGenerateDataDummyKantor(t *testing.T) {
 func TestGenerateDataDummyPelanggan(t *testing.T) {
 	config.LoadEnv("../.env")
 	mconn := utils.SetConnection()
-	apalah, err := utils.DummyKantorGenerator(50, mconn)
+	apalah, err := utils.DummyPelangganGenerator(50, mconn)
 	if err != nil {
 		t.Fatalf("Error generating dummy users: %v", err)
 	}

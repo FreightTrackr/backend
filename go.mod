@@ -1,8 +1,9 @@
 module github.com/FreightTrackr/backend
 
-go 1.23.3
+go 1.22.9
 
 require (
+	github.com/Befous/DummyGenerator v1.0.4
 	github.com/bxcodec/faker/v4 v4.0.0-beta.3
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/golang-jwt/jwt/v5 v5.2.1

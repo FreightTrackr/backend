@@ -1,11 +1,14 @@
 package utils
 
 import (
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 // ReadPrivateKeyFromFile reads an RSA private key from a file
@@ -39,4 +42,122 @@ func ReadPublicKeyFromFile(filename string) (*rsa.PublicKey, error) {
 		log.Fatalf("not ok: %v", err)
 	}
 	return publicKey, nil
+}
+
+func ReadPrivateKeyFromEnv(private string) (*rsa.PrivateKey, error) {
+	privateKeyPEM := os.Getenv(private)
+	if privateKeyPEM == "" {
+		log.Fatalf("PRIVATE_KEY environment variable not set")
+	}
+
+	// Replace escaped newlines with actual newlines
+	privateKeyPEM = strings.ReplaceAll(privateKeyPEM, `\n`, "\n")
+
+	block, _ := pem.Decode([]byte(privateKeyPEM))
+	if block == nil {
+		return nil, fmt.Errorf("failed to decode PEM block containing private key")
+	}
+
+	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err != nil {
+		return nil, fmt.Errorf("x509.ParsePKCS1PrivateKey: %v", err)
+	}
+
+	return privateKey, nil
+}
+
+func ReadPublicKeyFromEnv(oublic string) (*rsa.PublicKey, error) {
+	publicKeyPEM := os.Getenv(oublic)
+	if publicKeyPEM == "" {
+		log.Fatalf("PUBLIC_KEY environment variable not set")
+	}
+	publicKeyPEM = strings.ReplaceAll(publicKeyPEM, `\n`, "\n")
+	block, _ := pem.Decode([]byte(publicKeyPEM))
+	if block == nil {
+		return nil, fmt.Errorf("failed to decode PEM block containing public key")
+	}
+	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return nil, fmt.Errorf("x509.ParsePKIXPublicKey: %v", err)
+	}
+	publicKey, ok := pub.(*rsa.PublicKey)
+	if !ok {
+		return nil, fmt.Errorf("not ok: %v", err)
+	}
+	return publicKey, nil
+}
+
+func GenerateRSAPem(privateFilename string, publicFilename string, bits int) error {
+	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
+	if err != nil {
+		return fmt.Errorf("failed to generate RSA private key: %v", err)
+	}
+	privKeyBytes := x509.MarshalPKCS1PrivateKey(privateKey)
+	privPem := &pem.Block{
+		Type:  "RSA PRIVATE KEY",
+		Bytes: privKeyBytes,
+	}
+	privFile, err := os.Create(privateFilename)
+	if err != nil {
+		return fmt.Errorf("failed to create file %s: %v", privateFilename, err)
+	}
+	defer privFile.Close()
+	err = pem.Encode(privFile, privPem)
+	if err != nil {
+		return fmt.Errorf("failed to write private key to file: %v", err)
+	}
+	publicKey := &privateKey.PublicKey
+	pubKeyBytes, err := x509.MarshalPKIXPublicKey(publicKey)
+	if err != nil {
+		return fmt.Errorf("failed to marshal public key: %v", err)
+	}
+	pubPem := &pem.Block{
+		Type:  "PUBLIC KEY",
+		Bytes: pubKeyBytes,
+	}
+	pubFile, err := os.Create(publicFilename)
+	if err != nil {
+		return fmt.Errorf("failed to create file %s: %v", publicFilename, err)
+	}
+	defer pubFile.Close()
+	err = pem.Encode(pubFile, pubPem)
+	if err != nil {
+		return fmt.Errorf("failed to write public key to file: %v", err)
+	}
+	return nil
+}
+
+func GenerateSecretKeyEnv(privateKeyPath string) (string, string, error) {
+	privateKeyPEM, err := os.ReadFile(privateKeyPath)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to read private key file: %v", err)
+	}
+	cleanPrivateKey := CleanPEMString(string(privateKeyPEM))
+	block, _ := pem.Decode(privateKeyPEM)
+	if block == nil {
+		return "", "", fmt.Errorf("failed to decode private key PEM block")
+	}
+	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to parse private key: %v", err)
+	}
+	publicKey := privateKey.PublicKey
+	publicKeyBytes, err := x509.MarshalPKIXPublicKey(&publicKey)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to marshal public key: %v", err)
+	}
+	publicKeyPEM := pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: publicKeyBytes})
+	cleanPublicKey := CleanPEMString(string(publicKeyPEM))
+
+	return cleanPrivateKey, cleanPublicKey, nil
+}
+
+func CleanPEMString(pem string) string {
+	// pem = strings.ReplaceAll(pem, "-----BEGIN RSA PRIVATE KEY-----", "")
+	// pem = strings.ReplaceAll(pem, "-----END RSA PRIVATE KEY-----", "")
+	// pem = strings.ReplaceAll(pem, "-----BEGIN PUBLIC KEY-----", "")
+	// pem = strings.ReplaceAll(pem, "-----END PUBLIC KEY-----", "")
+	pem = strings.ReplaceAll(pem, "\n", `\n`)
+	// pem = strings.ReplaceAll(pem, "\r", `\r`)
+	return pem
 }

@@ -1,3 +1,5 @@
+github.com/Befous/DummyGenerator v1.0.4 h1:eyyigUI+ZClAKo+fgJtmDQUDj2WnKT+slzzDFuPCFg0=
+github.com/Befous/DummyGenerator v1.0.4/go.mod h1:ZxRM0KXVyM1mLt8AfuDo87IGPf7HiVlgKYJlcoafsDM=
 github.com/andybalholm/brotli v1.0.5 h1:8uQZIdzKmjc/iuPu7O2ioW48L81FgatrcpfFmiq/cCs=
 github.com/andybalholm/brotli v1.0.5/go.mod h1:fO7iG3H7G2nSZ7m0zPUDn85XEX2GTukHGRSepvi9Eig=
 github.com/bxcodec/faker/v4 v4.0.0-beta.3 h1:gqYNBvN72QtzKkYohNDKQlm+pg+uwBDVMN28nWHS18k=

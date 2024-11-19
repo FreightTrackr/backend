@@ -61,6 +61,13 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
+	if user.Role != "admin" && user.Role != "kantor" && user.Role != "pelanggan" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Role tidak tersedia",
+		})
+	}
+
 	if utils.UsernameExists(mconn, collusers, user) {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
 			Status:  fiber.StatusBadRequest,
@@ -125,7 +132,7 @@ func Login(c *fiber.Ctx) error {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 
-	privateKey, err := utils.ReadPrivateKeyFromFile("./keys/private.pem")
+	privateKey, err := utils.ReadPrivateKeyFromEnv("PRIVATE_KEY")
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Pesan{
 			Status:  fiber.StatusInternalServerError,
@@ -154,6 +161,12 @@ func AmbilSemuaUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
 			Status:  fiber.StatusBadRequest,
 			Message: "GetAllDoc error: " + err.Error(),
+		})
+	}
+	if datauser == nil {
+		return c.Status(fiber.StatusNotFound).JSON(models.Pesan{
+			Status:  fiber.StatusNotFound,
+			Message: "Data user tidak ditemukan",
 		})
 	}
 	return c.Status(fiber.StatusOK).JSON(models.Pesan{

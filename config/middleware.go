@@ -34,7 +34,7 @@ func JwtMiddleware() fiber.Handler {
 			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
-			return utils.ReadPublicKeyFromFile("./keys/public.pem")
+			return utils.ReadPublicKeyFromEnv("PUBLIC_KEY")
 		})
 
 		if err != nil || !token.Valid {

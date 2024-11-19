@@ -1,5 +1,5 @@
 # Gunakan image Go sebagai base image
-FROM golang:1.23.3-alpine AS builder
+FROM golang:1.22.9-alpine AS builder
 
 # Install dependencies yang diperlukan
 RUN apk add --no-cache git
@@ -17,13 +17,13 @@ RUN go mod download
 COPY . .
 
 # Build aplikasi
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o main.exe main.go
 
 # Final stage
 FROM alpine:latest
 
 WORKDIR /root/
 
-COPY --from=builder /app/main .
+COPY --from=builder /app/main.exe .
 
-CMD ["./main"]
+CMD ["./main.exe"]

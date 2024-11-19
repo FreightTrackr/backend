@@ -14,17 +14,23 @@ func AmbilSemuaHistory(c *fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	limit, _ := strconv.Atoi(c.Query("limit", "10"))
 	mconn := utils.SetConnection()
-	datakantor, datacount, err := utils.GetAllHistoryWithPagination(mconn, collhistory, page, limit)
+	datahistory, datacount, err := utils.GetAllHistoryWithPagination(mconn, collhistory, page, limit)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
 			Status:  fiber.StatusBadRequest,
 			Message: "GetAllDoc error: " + err.Error(),
 		})
 	}
+	if datahistory == nil {
+		return c.Status(fiber.StatusNotFound).JSON(models.Pesan{
+			Status:  fiber.StatusNotFound,
+			Message: "Data user tidak ditemukan",
+		})
+	}
 	return c.Status(fiber.StatusOK).JSON(models.Pesan{
 		Status:     fiber.StatusOK,
 		Message:    "Berhasil ambil data",
-		Data:       datakantor,
+		Data:       datahistory,
 		Data_Count: &datacount,
 		Page:       page,
 	})
