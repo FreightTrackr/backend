@@ -127,7 +127,7 @@ func GetDataForDashboard[T any](db *mongo.Database, collection, kode_pelanggan, 
 	findOptions := options.Find()
 	findOptions.SetSkip(int64((page - 1) * limit))
 	findOptions.SetLimit(int64(limit))
-	statuses := []string{"delivered", "canceled", "returned", "inWarehouse", "inVehicle", "failed"}
+	statuses := []string{"delivered", "canceled", "returned", "inWarehouse", "inVehicle", "failed", "paid"}
 
 	// Tambahkan filter untuk tanggal_kirim dan tanggal_terima
 	filter := bson.M{
