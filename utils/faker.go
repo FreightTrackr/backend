@@ -92,7 +92,11 @@ func DummyTransaksiGenerator(n int, mconn *mongo.Database) (string, error) {
 			transaksi.Status_Sla = transaksi.Aktual_Sla <= transaksi.Sla
 		}
 		if data_tipe_cod == "cod" {
-			transaksi.Status_Cod = status_cod[r.Intn(len(status_cod))]
+			if data_status == "delivered" {
+				transaksi.Status_Cod = status_cod[r.Intn(len(status_cod))]
+			} else {
+				transaksi.Status_Cod = "belum_setor"
+			}
 		}
 
 		year := tanggal_kirim.Year()
