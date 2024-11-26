@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error generating dummy transaksi: %v", err)
 	}
-	// _, err = utils.DummyKantorGenerator(20, mconn)
+	// _, err = utils.DummyKantorGenerator(mconn)
 	// if err != nil {
 	// 	log.Fatalf("Error generating dummy kantor: %v", err)
 	// }
