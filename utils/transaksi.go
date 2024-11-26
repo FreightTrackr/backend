@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"time"
+
 	"github.com/FreightTrackr/backend/helpers"
 	"github.com/FreightTrackr/backend/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,8 +17,8 @@ func GetAllTransaksi(mongoenv *mongo.Database, collname string) ([]models.Transa
 	return helpers.GetAllDoc[models.Transaksi](mongoenv, collname)
 }
 
-func GetAllTransaksiWithPagination(mongoenv *mongo.Database, collname string, page, limit int) ([]models.Transaksi, models.DataCount, error) {
-	return helpers.GetDataForAnalyst[models.Transaksi](mongoenv, collname, page, limit)
+func GetAllTransaksiWithPagination(mongoenv *mongo.Database, collname string, page, limit int, startDate, endDate time.Time) ([]models.Transaksi, models.DataCount, error) {
+	return helpers.GetDataForDashboard[models.Transaksi](mongoenv, collname, page, limit, startDate, endDate)
 }
 
 func FindTransaksi(mongoenv *mongo.Database, collname string, datatransaksi models.Transaksi) models.Transaksi {
