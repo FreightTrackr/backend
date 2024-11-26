@@ -17,8 +17,8 @@ func GetAllTransaksi(mongoenv *mongo.Database, collname string) ([]models.Transa
 	return helpers.GetAllDoc[models.Transaksi](mongoenv, collname)
 }
 
-func GetAllTransaksiWithPagination(mongoenv *mongo.Database, collname string, page, limit int, startDate, endDate time.Time) ([]models.Transaksi, models.DataCount, error) {
-	return helpers.GetDataForDashboard[models.Transaksi](mongoenv, collname, page, limit, startDate, endDate)
+func GetAllTransaksiWithPagination(mongoenv *mongo.Database, collname, kode_pelanggan, no_pend string, page, limit int, startDate, endDate time.Time) ([]models.Transaksi, models.DataCount, error) {
+	return helpers.GetDataForDashboard[models.Transaksi](mongoenv, collname, kode_pelanggan, no_pend, page, limit, startDate, endDate)
 }
 
 func FindTransaksi(mongoenv *mongo.Database, collname string, datatransaksi models.Transaksi) models.Transaksi {
