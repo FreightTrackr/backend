@@ -3,6 +3,7 @@ package helpers
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/FreightTrackr/backend/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -121,30 +122,46 @@ func GetAllDocWithPagination[T any](db *mongo.Database, collection string, page,
 	return doc, models.DataCount{Total: count}, nil
 }
 
-func GetDataForAnalyst[T any](db *mongo.Database, collection string, page, limit int) (docs []T, datacount models.DataCount, err error) {
+func GetDataForDashboard[T any](db *mongo.Database, collection string, page, limit int, startDate, endDate time.Time) (docs []T, datacount models.DataCount, err error) {
 	ctx := context.TODO()
 	findOptions := options.Find()
 	findOptions.SetSkip(int64((page - 1) * limit))
 	findOptions.SetLimit(int64(limit))
 	statuses := []string{"delivered", "canceled", "returned", "inWarehouse", "inVehicle", "failed"}
-	cur, err := db.Collection(collection).Find(ctx, bson.M{}, findOptions)
+
+	// Tambahkan filter untuk tanggal_kirim dan tanggal_terima
+	filter := bson.M{
+		"tanggal_kirim": bson.M{
+			"$gte": startDate,
+			"$lte": endDate,
+		},
+	}
+
+	cur, err := db.Collection(collection).Find(ctx, filter, findOptions)
 	if err != nil {
 		fmt.Printf("GetAllDoc Find Error: %v\n", err)
 		return nil, models.DataCount{}, err
 	}
 	defer cur.Close(ctx)
+
 	err = cur.All(ctx, &docs)
 	if err != nil {
 		fmt.Printf("GetAllDoc Cursor Error: %v\n", err)
 		return nil, models.DataCount{}, err
 	}
-	datacount.Total, err = db.Collection(collection).CountDocuments(ctx, bson.M{})
+
+	datacount.Total, err = db.Collection(collection).CountDocuments(ctx, filter)
 	if err != nil {
 		fmt.Printf("GetAllDoc CountDocuments Error: %v\n", err)
 		return nil, models.DataCount{}, err
 	}
+
 	for _, status := range statuses {
-		count, err := db.Collection(collection).CountDocuments(ctx, bson.M{"status": status})
+		statusFilter := bson.M{
+			"status":        status,
+			"tanggal_kirim": bson.M{"$gte": startDate, "$lte": endDate},
+		}
+		count, err := db.Collection(collection).CountDocuments(ctx, statusFilter)
 		if err != nil {
 			fmt.Printf("GetAllDoc CountDocuments for %s Error: %v\n", status, err)
 			return nil, models.DataCount{}, err
