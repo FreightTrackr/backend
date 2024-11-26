@@ -122,7 +122,7 @@ func GetAllDocWithPagination[T any](db *mongo.Database, collection string, page,
 	return doc, models.DataCount{Total: count}, nil
 }
 
-func GetDataForDashboard[T any](db *mongo.Database, collection string, page, limit int, startDate, endDate time.Time) (docs []T, datacount models.DataCount, err error) {
+func GetDataForDashboard[T any](db *mongo.Database, collection, kode_pelanggan, no_pend string, page, limit int, startDate, endDate time.Time) (docs []T, datacount models.DataCount, err error) {
 	ctx := context.TODO()
 	findOptions := options.Find()
 	findOptions.SetSkip(int64((page - 1) * limit))
@@ -131,10 +131,18 @@ func GetDataForDashboard[T any](db *mongo.Database, collection string, page, lim
 
 	// Tambahkan filter untuk tanggal_kirim dan tanggal_terima
 	filter := bson.M{
-		"tanggal_kirim": bson.M{
-			"$gte": startDate,
-			"$lte": endDate,
-		},
+		"tanggal_kirim": bson.M{"$gte": startDate, "$lte": endDate},
+	}
+
+	if kode_pelanggan != "" {
+		filter["kode_pelanggan"] = kode_pelanggan
+	}
+
+	if no_pend != "" {
+		filter["$or"] = []bson.M{
+			{"no_pend_kirim": no_pend},
+			{"no_pend_terima": no_pend},
+		}
 	}
 
 	cur, err := db.Collection(collection).Find(ctx, filter, findOptions)
@@ -160,6 +168,15 @@ func GetDataForDashboard[T any](db *mongo.Database, collection string, page, lim
 		statusFilter := bson.M{
 			"status":        status,
 			"tanggal_kirim": bson.M{"$gte": startDate, "$lte": endDate},
+		}
+		if kode_pelanggan != "" {
+			statusFilter["kode_pelanggan"] = kode_pelanggan
+		}
+		if no_pend != "" {
+			statusFilter["$or"] = []bson.M{
+				{"no_pend_kirim": no_pend},
+				{"no_pend_terima": no_pend},
+			}
 		}
 		count, err := db.Collection(collection).CountDocuments(ctx, statusFilter)
 		if err != nil {
