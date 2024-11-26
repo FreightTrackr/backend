@@ -9,7 +9,7 @@ import (
 	generator "github.com/Befous/DummyGenerator"
 	"github.com/FreightTrackr/backend/helpers"
 	"github.com/FreightTrackr/backend/models"
-	"github.com/bxcodec/faker/v4"
+	"github.com/go-faker/faker/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -70,6 +70,14 @@ func DummyTransaksiGenerator(n int, mconn *mongo.Database) (string, error) {
 	status := []string{"delivered", "canceled", "returned", "inWarehouse", "inVehicle", "failed", "paid"}
 	startDate := time.Date(2023, time.January, 1, 0, 0, 0, 0, time.UTC)
 	endDate := time.Now()
+	no_pend_kirim := 400010 + rand.Intn((410000-400010)/10+1)*10
+	var no_pend_terima int
+	for {
+		no_pend_terima = 400010 + rand.Intn((410000-400010)/10+1)*10
+		if no_pend_terima != no_pend_kirim {
+			break
+		}
+	}
 	for i := 0; i < n; i++ {
 		var transaksi models.Transaksi
 
@@ -137,8 +145,8 @@ func DummyTransaksiGenerator(n int, mconn *mongo.Database) (string, error) {
 		transaksi.Total_Biaya = transaksi.Biaya_Dasar + transaksi.Biaya_Pajak + transaksi.Biaya_Asuransi
 		transaksi.Status = data_status
 		transaksi.Tipe_Cod = data_tipe_cod
-		transaksi.No_Pend_Kirim = fakeDigit()
-		transaksi.No_Pend_Terima = fakeDigit()
+		transaksi.No_Pend_Kirim = strconv.Itoa(no_pend_kirim)
+		transaksi.No_Pend_Terima = strconv.Itoa(no_pend_terima)
 		transaksi.Kode_Pelanggan = faker.Username()
 		transaksi.Created_By.Username = faker.Username()
 		transaksi.ID_History = faker.UUIDDigit()
@@ -149,33 +157,40 @@ func DummyTransaksiGenerator(n int, mconn *mongo.Database) (string, error) {
 	return "Bergasil generate " + strconv.Itoa(n) + " data", nil
 }
 
-func DummyKantorGenerator(n int, mconn *mongo.Database) (string, error) {
+func DummyKantorGenerator(mconn *mongo.Database) (string, error) {
 	regionOptions := []int{1, 2, 3, 4, 5, 6}
 	officeTypes := []string{"kcu", "kc", "kcp"}
+	no_pend_kcu := 400010 + rand.Intn((410000-400010)/10+1)*10
+	no_pend_kc := 400010 + rand.Intn((410000-400010)/10+1)*10
 
-	for i := 0; i < n; i++ {
+	// Generate No_Pend values starting from 400010, incrementing by 10 each time
+	for noPend := 400010; noPend <= 410000; noPend += 10 { // Increment by 10
 		var kantor models.Kantor
 		alamat := generator.GenerateRandomAlamat()
-		kantor.No_Pend = fakeDigit()
+		kantor.No_Pend = strconv.Itoa(noPend) // Set No_Pend to the current value in the sequence
 		kantor.Tipe_Kantor = officeTypes[rand.Intn(len(officeTypes))]
-		kantor.Nama_Kantor = "asdasd"
+		kantor.Nama_Kantor = "Kantor " + faker.Name()
 		kantor.Region_Kantor = regionOptions[rand.Intn(len(regionOptions))]
 		kantor.Kota_Kantor = alamat.Kota_Kabupaten
 		kantor.Kode_Pos_Kantor = alamat.Kode_Pos
 		kantor.Alamat_Kantor = alamat.Alamat_Lengkap
 
-		if kantor.Tipe_Kantor != "kcu" {
-			kantor.No_Pend_Kcu = fakeDigit() // Isi dengan No_Pend jika Tipe_Kantor adalah kcu
-		}
-
-		if kantor.Tipe_Kantor != "kc" && kantor.Tipe_Kantor != "kcu" {
-			kantor.No_Pend_Kc = fakeDigit()
+		if kantor.Tipe_Kantor == "kc" {
+			kantor.No_Pend_Kcu = strconv.Itoa(no_pend_kcu)
+		} else if kantor.Tipe_Kantor == "kcp" {
+			// 50% chance to generate both No_Pend_Kc and No_Pend_Kcu for "kcp"
+			if rand.Float32() < 0.5 {
+				kantor.No_Pend_Kcu = strconv.Itoa(no_pend_kcu)
+				kantor.No_Pend_Kc = strconv.Itoa(no_pend_kc)
+			} else {
+				kantor.No_Pend_Kcu = strconv.Itoa(no_pend_kcu)
+			}
 		}
 
 		InsertKantor(mconn, "kantor", kantor)
 	}
 
-	return "Bergasil generate " + strconv.Itoa(n) + " data", nil
+	return "Berhasil generate 1000 data", nil
 }
 
 func DummyPelangganGenerator(n int, mconn *mongo.Database) (string, error) {
