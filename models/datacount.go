@@ -8,4 +8,5 @@ type DataCount struct {
 	InWarehouse int64 `json:"inWarehouse,omitempty"`
 	InVehicle   int64 `json:"inVehicle,omitempty"`
 	Failed      int64 `json:"failed,omitempty"`
+	Paid        int64 `json:"paid,omitempty"`
 }
