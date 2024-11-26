@@ -28,7 +28,7 @@ func AmbilSemuaTransaksi(c *fiber.Ctx) error {
 			Message: "Invalid limit parameter",
 		})
 	}
-	startDateStr := c.Query("Start_date", "")
+	startDateStr := c.Query("start_date", "")
 	endDateStr := c.Query("end_date", "")
 	var startDate, endDate time.Time
 
