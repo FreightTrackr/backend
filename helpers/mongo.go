@@ -196,6 +196,8 @@ func GetDataForDashboard[T any](db *mongo.Database, collection, kode_pelanggan, 
 			datacount.InVehicle = count
 		case "failed":
 			datacount.Failed = count
+		case "paid":
+			datacount.Paid = count
 		}
 	}
 	return docs, datacount, nil
