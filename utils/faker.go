@@ -137,7 +137,13 @@ func DummyTransaksiGenerator(n int, mconn *mongo.Database) (string, error) {
 		alamatpengirim := generator.GenerateRandomAlamat()
 		alamatpenerima := generator.GenerateRandomAlamat()
 
-		data_status := status[r.Intn(len(status))]
+		// Weighted selection for 'delivered' status (93% to 97%)
+		var data_status string
+		if r.Intn(100) < 50 { // 95% chance for 'delivered'
+			data_status = "delivered"
+		} else {
+			data_status = status[r.Intn(len(status)-1)+1] // Choose from the rest of the statuses (not 'delivered')
+		}
 		data_tipe_cod := tipe_cod[r.Intn(len(tipe_cod))]
 		tanggal_kirim := generateRandomDate(startDate, endDate)
 		transaksi.Tanggal_Kirim = primitive.NewDateTimeFromTime(tanggal_kirim)
