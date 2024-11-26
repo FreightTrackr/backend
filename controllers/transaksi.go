@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/FreightTrackr/backend/models"
 	"github.com/FreightTrackr/backend/utils"
@@ -12,10 +13,42 @@ import (
 var colltransaksi = "transaksi"
 
 func AmbilSemuaTransaksi(c *fiber.Ctx) error {
-	page, _ := strconv.Atoi(c.Query("page", "1"))
-	limit, _ := strconv.Atoi(c.Query("limit", "10"))
+	page, err := strconv.Atoi(c.Query("page", "1"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Invalid page parameter",
+		})
+	}
+
+	limit, err := strconv.Atoi(c.Query("limit", "10"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Invalid limit parameter",
+		})
+	}
+	startDateStr := c.Query("Start_date", "")
+	endDateStr := c.Query("end_date", "")
+	var startDate, endDate time.Time
+
+	startDate, err = utils.ParseDate(startDateStr, false)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Format Start_date tidak valid: " + err.Error(),
+		})
+	}
+
+	endDate, err = utils.ParseDate(endDateStr, true)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Format end_date tidak valid: " + err.Error(),
+		})
+	}
 	mconn := utils.SetConnection()
-	datatransaksi, datacount, err := utils.GetAllTransaksiWithPagination(mconn, colltransaksi, page, limit)
+	datatransaksi, datacount, err := utils.GetAllTransaksiWithPagination(mconn, colltransaksi, page, limit, startDate, endDate)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
 			Status:  fiber.StatusBadRequest,
@@ -51,7 +84,7 @@ func TambahTransaksi(c *fiber.Ctx) error {
 		})
 	}
 
-	if transaksi.No_Resi == "" || transaksi.Layanan == "" || transaksi.Isi_Kiriman == "" || transaksi.Nama_Pengirim == "" || transaksi.Alamat_Pengirim == "" || transaksi.Kode_Pos_Pengirim == 0 || transaksi.Kota_Asal == "" || transaksi.Nama_Penerima == "" || transaksi.Alamat_Penerima == "" || transaksi.Kode_Pos_Penerima == 0 || transaksi.Kota_Tujuan == "" || transaksi.Berat_Kiriman == 0 || transaksi.Volumetrik == 0 || transaksi.Nilai_Barang == 0 || transaksi.Biaya_Dasar == 0 || transaksi.Biaya_Pajak == 0 || transaksi.Biaya_Asuransi == 0 || transaksi.Total_Biaya == 0 || transaksi.Tanggal_Kirim == primitive.DateTime(0) || transaksi.Tanggal_Terima == primitive.DateTime(0) || transaksi.Tanggal_Tenggat == primitive.DateTime(0) || transaksi.Status == "" || transaksi.Tipe_Cod == "" || transaksi.Status_Cod == "" || transaksi.No_Pend_Kirim == "" || transaksi.No_Pend_Terima == "" || transaksi.Kode_Pelanggan == "" {
+	if transaksi.No_Resi == "" || transaksi.Layanan == "" || transaksi.Isi_Kiriman == "" || transaksi.Nama_Pengirim == "" || transaksi.Alamat_Pengirim == "" || transaksi.Kode_Pos_Pengirim == 0 || transaksi.Kota_Asal == "" || transaksi.Nama_Penerima == "" || transaksi.Alamat_Penerima == "" || transaksi.Kode_Pos_Penerima == 0 || transaksi.Kota_Tujuan == "" || transaksi.Berat_Kiriman == 0 || transaksi.Volumetrik == 0 || transaksi.Nilai_Barang == 0 || transaksi.Biaya_Dasar == 0 || transaksi.Biaya_Pajak == 0 || transaksi.Biaya_Asuransi == 0 || transaksi.Total_Biaya == 0 || transaksi.Tanggal_Kirim == primitive.DateTime(0) || transaksi.Tanggal_Antaran_Pertama == primitive.DateTime(0) || transaksi.Tanggal_Terima == primitive.DateTime(0) || transaksi.Status == "" || transaksi.Tipe_Cod == "" || transaksi.Status_Cod == "" || transaksi.No_Pend_Kirim == "" || transaksi.No_Pend_Terima == "" || transaksi.Kode_Pelanggan == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
 			Status:  fiber.StatusBadRequest,
 			Message: "Field wajib diisi",
