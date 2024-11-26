@@ -15,18 +15,18 @@ func main() {
 	// if err != nil {
 	// 	log.Fatalf("Error generating dummy users: %v", err)
 	// }
-	_, err := utils.DummyTransaksiGenerator(190000, mconn)
+	_, err := utils.DummyTransaksiGenerator(200000, mconn)
 	if err != nil {
 		log.Fatalf("Error generating dummy transaksi: %v", err)
 	}
-	// _, err = utils.DummyKantorGenerator(mconn)
-	// if err != nil {
-	// 	log.Fatalf("Error generating dummy kantor: %v", err)
-	// }
-	// _, err = utils.DummyPelangganGenerator(100, mconn)
-	// if err != nil {
-	// 	log.Fatalf("Error generating dummy pelanggan: %v", err)
-	// }
+	_, err = utils.DummyKantorGenerator(mconn)
+	if err != nil {
+		log.Fatalf("Error generating dummy kantor: %v", err)
+	}
+	_, err = utils.DummyPelangganGenerator(mconn)
+	if err != nil {
+		log.Fatalf("Error generating dummy pelanggan: %v", err)
+	}
 	// _, err = utils.DummyHistoryGenerator(30, mconn)
 	// if err != nil {
 	// 	log.Fatalf("Error generating dummy history: %v", err)
