@@ -30,7 +30,7 @@ func TestGenerateDataDummyTransaksi(t *testing.T) {
 func TestGenerateDataDummyKantor(t *testing.T) {
 	config.LoadEnv("../.env")
 	mconn := utils.SetConnection()
-	apalah, err := utils.DummyKantorGenerator(50, mconn)
+	apalah, err := utils.DummyKantorGenerator(mconn)
 	if err != nil {
 		t.Fatalf("Error generating dummy users: %v", err)
 	}
