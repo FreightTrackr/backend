@@ -15,7 +15,7 @@ func main() {
 	// if err != nil {
 	// 	log.Fatalf("Error generating dummy users: %v", err)
 	// }
-	_, err := utils.DummyTransaksiGenerator(200000, mconn)
+	_, err := utils.DummyTransaksiGenerator(1000, mconn)
 	if err != nil {
 		log.Fatalf("Error generating dummy transaksi: %v", err)
 	}
