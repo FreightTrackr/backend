@@ -30,7 +30,7 @@ type Transaksi struct {
 	Status_Cod              string             `json:"status_cod,omitempty" bson:"status_cod,omitempty"`
 	Sla                     int                `json:"sla" bson:"sla"`
 	Aktual_Sla              int                `json:"aktual_sla,omitempty" bson:"aktual_sla,omitempty"`
-	Status_Sla              bool               `json:"status_sla" bson:"status_sla"`
+	Status_Sla              *bool              `json:"status_sla,omitempty" bson:"status_sla,omitempty"`
 	No_Pend_Kirim           string             `json:"no_pend_kirim" bson:"no_pend_kirim"`
 	No_Pend_Terima          string             `json:"no_pend_terima" bson:"no_pend_terima"`
 	Kode_Pelanggan          string             `json:"kode_pelanggan" bson:"kode_pelanggan"`
