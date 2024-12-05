@@ -157,9 +157,11 @@ func DummyTransaksiGenerator(n int, mconn *mongo.Database) (string, error) {
 			transaksi.Tanggal_Terima = primitive.NewDateTimeFromTime(tanggal_terima)
 			transaksi.Aktual_Sla = int(tanggal_antaran_pertama.Sub(tanggal_kirim).Hours() / 24)
 			if transaksi.Aktual_Sla <= transaksi.Sla {
-				transaksi.Status_Sla = true
+				trueValue := true
+				transaksi.Status_Sla = &trueValue
 			} else {
-				transaksi.Status_Sla = false
+				falseValue := false
+				transaksi.Status_Sla = &falseValue
 			}
 		}
 		if data_tipe_cod == "cod" {
