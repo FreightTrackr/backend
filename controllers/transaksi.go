@@ -72,6 +72,49 @@ func AmbilSemuaTransaksi(c *fiber.Ctx) error {
 	})
 }
 
+func AmbilSemuaTransaksiUntukVisualusasi(c *fiber.Ctx) error {
+	no_pend := c.Query("no_pend", "")
+	kode_pelanggan := c.Query("kode_pelanggan", "")
+	startDateStr := c.Query("start_date", "")
+	endDateStr := c.Query("end_date", "")
+	var startDate, endDate time.Time
+
+	startDate, err := utils.ParseDate(startDateStr, false)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Format Start_date tidak valid: " + err.Error(),
+		})
+	}
+
+	endDate, err = utils.ParseDate(endDateStr, true)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Format end_date tidak valid: " + err.Error(),
+		})
+	}
+	mconn := utils.SetConnection()
+	datatransaksi, err := utils.GetAllTransaksiForVisualization(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "GetAllDoc error: " + err.Error(),
+		})
+	}
+	if datatransaksi == nil {
+		return c.Status(fiber.StatusNotFound).JSON(models.Pesan{
+			Status:  fiber.StatusNotFound,
+			Message: "Data transaksi tidak ditemukan",
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(models.Pesan{
+		Status:  fiber.StatusOK,
+		Message: "Berhasil ambil data",
+		Data:    datatransaksi,
+	})
+}
+
 func TambahTransaksi(c *fiber.Ctx) error {
 	// Peringatan, kode ini belom selesai, no_resi dan id_history belom dibuat generate otomatis
 
