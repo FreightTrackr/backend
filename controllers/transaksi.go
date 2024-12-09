@@ -28,8 +28,8 @@ func AmbilSemuaTransaksi(c *fiber.Ctx) error {
 			Message: "Invalid limit parameter",
 		})
 	}
-	kode_pelanggan := c.Query("kode_pelanggan", "")
 	no_pend := c.Query("no_pend", "")
+	kode_pelanggan := c.Query("kode_pelanggan", "")
 	startDateStr := c.Query("start_date", "")
 	endDateStr := c.Query("end_date", "")
 	var startDate, endDate time.Time
@@ -50,7 +50,7 @@ func AmbilSemuaTransaksi(c *fiber.Ctx) error {
 		})
 	}
 	mconn := utils.SetConnection()
-	datatransaksi, datacount, err := utils.GetAllTransaksiWithPagination(mconn, colltransaksi, kode_pelanggan, no_pend, page, limit, startDate, endDate)
+	datatransaksi, datacount, err := utils.GetAllTransaksiWithPagination(mconn, colltransaksi, no_pend, kode_pelanggan, page, limit, startDate, endDate)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
 			Status:  fiber.StatusBadRequest,
