@@ -21,6 +21,13 @@ func GetAllTransaksiWithPagination(mongoenv *mongo.Database, collname, kode_pela
 	return helpers.GetDataForDashboard[models.Transaksi](mongoenv, collname, kode_pelanggan, no_pend, page, limit, startDate, endDate)
 }
 
+func GetAllTransaksiForVisualization(mongoenv *mongo.Database, collname string, startDate, endDate time.Time) ([]models.Transaksi, error) {
+	filter := bson.M{
+		"tanggal_kirim": bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	return helpers.GetAllDocByFilter[models.Transaksi](mongoenv, collname, filter)
+}
+
 func FindTransaksi(mongoenv *mongo.Database, collname string, datatransaksi models.Transaksi) models.Transaksi {
 	filter := bson.M{"no_resi": datatransaksi.No_Resi}
 	return helpers.GetOneDoc[models.Transaksi](mongoenv, collname, filter)
