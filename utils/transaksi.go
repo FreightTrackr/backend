@@ -21,9 +21,18 @@ func GetAllTransaksiWithPagination(mongoenv *mongo.Database, collname, kode_pela
 	return helpers.GetDataForDashboard[models.Transaksi](mongoenv, collname, kode_pelanggan, no_pend, page, limit, startDate, endDate)
 }
 
-func GetAllTransaksiForVisualization(mongoenv *mongo.Database, collname string, startDate, endDate time.Time) ([]models.Transaksi, error) {
+func GetAllTransaksiForVisualization(mongoenv *mongo.Database, collname, no_pend, kode_pelanggan string, startDate, endDate time.Time) ([]models.Transaksi, error) {
 	filter := bson.M{
 		"tanggal_kirim": bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	if no_pend != "" {
+		filter["$or"] = []bson.M{
+			{"no_pend_kirim": no_pend},
+			{"no_pend_terima": no_pend},
+		}
+	}
+	if kode_pelanggan != "" {
+		filter["kode_pelanggan"] = kode_pelanggan
 	}
 	return helpers.GetAllDocByFilter[models.Transaksi](mongoenv, collname, filter)
 }
