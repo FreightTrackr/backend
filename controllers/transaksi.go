@@ -28,11 +28,11 @@ func AmbilSemuaTransaksi(c *fiber.Ctx) error {
 			Message: "Invalid limit parameter",
 		})
 	}
-	no_pend := c.Query("no_pend", "")
-	kode_pelanggan := c.Query("kode_pelanggan", "")
 	startDateStr := c.Query("start_date", "")
 	endDateStr := c.Query("end_date", "")
 	var startDate, endDate time.Time
+	no_pend := c.Query("no_pend", "")
+	kode_pelanggan := c.Query("kode_pelanggan", "")
 
 	startDate, err = utils.ParseDate(startDateStr, false)
 	if err != nil {
@@ -73,11 +73,11 @@ func AmbilSemuaTransaksi(c *fiber.Ctx) error {
 }
 
 func AmbilSemuaTransaksiUntukVisualusasi(c *fiber.Ctx) error {
-	no_pend := c.Query("no_pend", "")
-	kode_pelanggan := c.Query("kode_pelanggan", "")
 	startDateStr := c.Query("start_date", "")
 	endDateStr := c.Query("end_date", "")
 	var startDate, endDate time.Time
+	no_pend := c.Query("no_pend", "")
+	kode_pelanggan := c.Query("kode_pelanggan", "")
 
 	startDate, err := utils.ParseDate(startDateStr, false)
 	if err != nil {
