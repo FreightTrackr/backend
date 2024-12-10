@@ -10,7 +10,7 @@ func TransaksiRoute(page *fiber.App) {
 	page.Use(config.JwtMiddleware())
 	page.Get("/transaksi", controllers.AmbilSemuaTransaksiDenganPagination)
 	page.Get("/semuatransaksi", controllers.AmbilSemuaTransaksi)
-	page.Get("/transaksislatrue", controllers.AmbilTransaksiDenganStatusDelivered)
+	page.Get("/transaksistatusdelivered", controllers.AmbilTransaksiDenganStatusDelivered)
 	page.Post("/transaksi", controllers.TambahTransaksi)
 	page.Delete("/transaksi", controllers.HapusTransaksi)
 }
