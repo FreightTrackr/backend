@@ -157,7 +157,7 @@ func AmbilTransaksiDenganStatusSlaTrue(c *fiber.Ctx) error {
 		})
 	}
 	mconn := utils.SetConnection()
-	datatransaksi, err := utils.GetStatusSlaTrueTransaksi(mconn, colltransaksi, startDate, endDate)
+	datatransaksi, err := utils.GetStatusDeliveredTransaksi(mconn, colltransaksi, startDate, endDate)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
 			Status:  fiber.StatusBadRequest,
