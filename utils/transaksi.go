@@ -13,10 +13,6 @@ func InsertTransaksi(mongoenv *mongo.Database, collname string, datatransaksi mo
 	return helpers.InsertOneDoc(mongoenv, collname, datatransaksi)
 }
 
-func GetAllTransaksi(mongoenv *mongo.Database, collname string) ([]models.Transaksi, error) {
-	return helpers.GetAllDoc[models.Transaksi](mongoenv, collname)
-}
-
 func GetAllTransaksiWithPagination(mongoenv *mongo.Database, collname, kode_pelanggan, no_pend string, page, limit int, startDate, endDate time.Time) ([]models.Transaksi, models.DataCount, error) {
 	return helpers.GetDataForDashboard[models.Transaksi](mongoenv, collname, kode_pelanggan, no_pend, page, limit, startDate, endDate)
 }
