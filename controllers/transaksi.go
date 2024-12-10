@@ -72,7 +72,7 @@ func AmbilSemuaTransaksiDenganPagination(c *fiber.Ctx) error {
 	})
 }
 
-func AmbilSemuaTransaksiUntukVisualusasi(c *fiber.Ctx) error {
+func AmbilSemuaTransaksi(c *fiber.Ctx) error {
 	startDateStr := c.Query("start_date", "")
 	endDateStr := c.Query("end_date", "")
 	var startDate, endDate time.Time
