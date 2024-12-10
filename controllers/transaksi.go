@@ -34,6 +34,13 @@ func AmbilSemuaTransaksiDenganPagination(c *fiber.Ctx) error {
 	no_pend := c.Query("no_pend", "")
 	kode_pelanggan := c.Query("kode_pelanggan", "")
 
+	if startDateStr == "" || endDateStr == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Masukkan parameter tanggal",
+		})
+	}
+
 	startDate, err = utils.ParseDate(startDateStr, false)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
