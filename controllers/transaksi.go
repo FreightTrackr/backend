@@ -129,7 +129,7 @@ func AmbilSemuaTransaksi(c *fiber.Ctx) error {
 	})
 }
 
-func AmbilTransaksiDenganStatusSlaTrue(c *fiber.Ctx) error {
+func AmbilTransaksiDenganStatusDelivered(c *fiber.Ctx) error {
 	startDateStr := c.Query("start_date", "")
 	endDateStr := c.Query("end_date", "")
 	var startDate, endDate time.Time
