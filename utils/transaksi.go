@@ -33,7 +33,7 @@ func GetAllTransaksi(mongoenv *mongo.Database, collname, no_pend, kode_pelanggan
 	return helpers.GetAllDocByFilter[models.Transaksi](mongoenv, collname, filter)
 }
 
-func GetStatusSlaTrueTransaksi(mongoenv *mongo.Database, collname string, startDate, endDate time.Time) ([]models.Transaksi, error) {
+func GetStatusDeliveredTransaksi(mongoenv *mongo.Database, collname string, startDate, endDate time.Time) ([]models.Transaksi, error) {
 	filter := bson.M{
 		"tanggal_kirim": bson.M{"$gte": startDate, "$lte": endDate},
 		"status":        "delivered",
