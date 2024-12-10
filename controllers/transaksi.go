@@ -12,7 +12,7 @@ import (
 
 var colltransaksi = "transaksi"
 
-func AmbilSemuaTransaksi(c *fiber.Ctx) error {
+func AmbilSemuaTransaksiDenganPagination(c *fiber.Ctx) error {
 	page, err := strconv.Atoi(c.Query("page", "1"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
@@ -95,7 +95,7 @@ func AmbilSemuaTransaksiUntukVisualusasi(c *fiber.Ctx) error {
 		})
 	}
 	mconn := utils.SetConnection()
-	datatransaksi, err := utils.GetAllTransaksiForVisualization(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
+	datatransaksi, err := utils.GetAllTransaksi(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
 			Status:  fiber.StatusBadRequest,
