@@ -332,6 +332,14 @@ func StdRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if utils.UsernameExists(mconn, collusers, user) {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Username telah dipakai",
+		})
+		return
+	}
+
 	hash, hashErr := helpers.HashPassword(user.Password)
 	if hashErr != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
