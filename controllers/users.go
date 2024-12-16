@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -274,5 +275,28 @@ func FiberSession(c *fiber.Ctx) error {
 		Status:  fiber.StatusOK,
 		Message: "Berikut data session anda",
 		Data:    session,
+	})
+}
+
+func StdRegister(w http.ResponseWriter, r *http.Request) {
+	mconn := utils.SetConnection()
+	var user models.Users
+
+	utils.ParseBody(w, r, &user)
+
+	hash, hashErr := helpers.HashPassword(user.Password)
+	if hashErr != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Gagal hash password: " + hashErr.Error(),
+		})
+		return
+	}
+	user.Password = hash
+
+	utils.InsertUser(mconn, collusers, user)
+	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
+		Status:  http.StatusOK,
+		Message: "Berhasil register",
 	})
 }
