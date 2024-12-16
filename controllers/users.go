@@ -379,8 +379,19 @@ func StdLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token, err := utils.SignedJWT(mconn, collusers, user)
+
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, models.Pesan{
+			Status:  http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+		return
+	}
+
 	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
 		Status:  http.StatusOK,
 		Message: "Berhasil login",
+		Token:   token,
 	})
 }
