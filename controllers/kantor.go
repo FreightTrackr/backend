@@ -10,7 +10,7 @@ import (
 
 var collkantor = "kantor"
 
-func AmbilSemuaKantor(c *fiber.Ctx) error {
+func FiberAmbilSemuaKantor(c *fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	limit, _ := strconv.Atoi(c.Query("limit", "10"))
 	mconn := utils.SetConnection()
@@ -36,7 +36,7 @@ func AmbilSemuaKantor(c *fiber.Ctx) error {
 	})
 }
 
-func TambahKantor(c *fiber.Ctx) error {
+func FiberTambahKantor(c *fiber.Ctx) error {
 	mconn := utils.SetConnection()
 	var kantor models.Kantor
 
@@ -110,7 +110,7 @@ func TambahKantor(c *fiber.Ctx) error {
 	})
 }
 
-func HapusKantor(c *fiber.Ctx) error {
+func FiberHapusKantor(c *fiber.Ctx) error {
 	mconn := utils.SetConnection()
 	var kantor models.Kantor
 	no_pend := c.Query("no_pend")
