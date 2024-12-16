@@ -15,4 +15,5 @@ func StdRoute(router *http.ServeMux) {
 	router.Handle("GET /std/kantor", config.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaKantor)))
 	router.Handle("GET /std/pelanggan", config.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaPelanggan)))
 	router.Handle("GET /std/transaksi", config.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaTransaksiDenganPagination)))
+	router.Handle("GET /std/semuatransaksi", config.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaTransaksi)))
 }
