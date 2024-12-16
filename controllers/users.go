@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/FreightTrackr/backend/config"
 	"github.com/FreightTrackr/backend/helpers"
 	"github.com/FreightTrackr/backend/models"
 	"github.com/FreightTrackr/backend/utils"
@@ -415,5 +416,39 @@ func StdAmbilSemuaUser(w http.ResponseWriter, r *http.Request) {
 		Data:       datauser,
 		Data_Count: &datacount,
 		Page:       page,
+	})
+}
+
+func StdSession(w http.ResponseWriter, r *http.Request) {
+	token, ok := config.UserFromContext(r.Context())
+	if !ok {
+		utils.WriteJSONResponse(w, http.StatusUnauthorized, models.Pesan{
+			Status:  http.StatusUnauthorized,
+			Message: "Authorization token required",
+		})
+		return
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		utils.WriteJSONResponse(w, http.StatusUnauthorized, models.Pesan{
+			Status:  http.StatusUnauthorized,
+			Message: "Invalid token",
+		})
+		return
+	}
+	var session models.Users
+
+	session.Username = claims["username"].(string)
+	session.Nama = claims["nama"].(string)
+	session.No_Telp = claims["no_telp"].(string)
+	session.Email = claims["email"].(string)
+	session.Role = claims["role"].(string)
+	session.No_Pend = claims["no_pend"].(string)
+	session.Kode_Pelanggan = claims["kode_pengguna"].(string)
+
+	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
+		Status:  http.StatusOK,
+		Message: "Berikut data session anda",
+		Data:    session,
 	})
 }
