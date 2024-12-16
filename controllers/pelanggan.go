@@ -10,7 +10,7 @@ import (
 
 var collpelanggan = "pelanggan"
 
-func AmbilSemuaPelanggan(c *fiber.Ctx) error {
+func FiberAmbilSemuaPelanggan(c *fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	limit, _ := strconv.Atoi(c.Query("limit", "10"))
 	mconn := utils.SetConnection()
@@ -36,7 +36,7 @@ func AmbilSemuaPelanggan(c *fiber.Ctx) error {
 	})
 }
 
-func AmbilSemuaPelangganFilter(c *fiber.Ctx) error {
+func FiberAmbilSemuaPelangganFilter(c *fiber.Ctx) error {
 	// Get pagination parameters from query string (or set defaults)
 	page, _ := strconv.Atoi(c.Query("page", "1"))              // Default to page 1
 	limit, _ := strconv.Atoi(c.Query("limit", "10"))           // Default to 10 items per page
@@ -64,7 +64,7 @@ func AmbilSemuaPelangganFilter(c *fiber.Ctx) error {
 	})
 }
 
-func TambahPelanggan(c *fiber.Ctx) error {
+func FiberTambahPelanggan(c *fiber.Ctx) error {
 	mconn := utils.SetConnection()
 	var pelanggan models.Pelanggan
 
@@ -111,7 +111,7 @@ func TambahPelanggan(c *fiber.Ctx) error {
 	})
 }
 
-func HapusPelanggan(c *fiber.Ctx) error {
+func FiberHapusPelanggan(c *fiber.Ctx) error {
 	mconn := utils.SetConnection()
 	var pelanggan models.Pelanggan
 	kode_pelanggan := c.Query("kode_pelanggan")
