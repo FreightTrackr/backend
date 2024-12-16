@@ -308,6 +308,14 @@ func StdRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(user.Password) < 8 || len(user.Password) > 20 {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Password harus antara 8 sampai 20 karakter",
+		})
+		return
+	}
+
 	hash, hashErr := helpers.HashPassword(user.Password)
 	if hashErr != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
