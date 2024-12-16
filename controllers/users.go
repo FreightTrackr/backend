@@ -356,3 +356,23 @@ func StdRegister(w http.ResponseWriter, r *http.Request) {
 		Message: "Berhasil register",
 	})
 }
+
+func StdLogin(w http.ResponseWriter, r *http.Request) {
+	mconn := utils.SetConnection()
+	var user models.Users
+
+	utils.ParseBody(w, r, &user)
+
+	if !utils.IsPasswordValid(mconn, collusers, user) {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Password salah",
+		})
+		return
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
+		Status:  http.StatusOK,
+		Message: "Berhasil login",
+	})
+}
