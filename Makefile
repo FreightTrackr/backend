@@ -6,7 +6,9 @@ docker-run:
 build:
 	@echo "Building..."
 	@go build -o main.exe .
-run:
-	@go run main.go
+run-fiber:
+	@go run cmd/fiber/main.go
+run-std:
+	@go run cmd/std/main.go
 seed:
 	@go run cmd/seed/seed.go
