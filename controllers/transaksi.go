@@ -382,6 +382,7 @@ func StdAmbilSemuaTransaksiDenganPagination(w http.ResponseWriter, r *http.Reque
 		Page:       page,
 	})
 }
+
 func StdAmbilSemuaTransaksi(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
 	startDateStr := utils.GetUrlQuery(r, "start_date", "")
@@ -414,6 +415,30 @@ func StdAmbilSemuaTransaksi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	datatransaksi, err := utils.GetAllTransaksi(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "GetAllDoc error: " + err.Error(),
+		})
+		return
+	}
+	if datatransaksi == nil {
+		utils.WriteJSONResponse(w, http.StatusNotFound, models.Pesan{
+			Status:  http.StatusNotFound,
+			Message: "Data transaksi tidak ditemukan",
+		})
+		return
+	}
+	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
+		Status:  http.StatusOK,
+		Message: "Berhasil ambil data",
+		Data:    datatransaksi,
+	})
+}
+
+func StdAmbilTransaksiDenganStatusDelivered(w http.ResponseWriter, r *http.Request) {
+	mconn := utils.SetConnection()
+	datatransaksi, err := utils.GetStatusDeliveredTransaksi(mconn, colltransaksi, time.Time{}, time.Now())
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
