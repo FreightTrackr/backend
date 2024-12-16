@@ -314,7 +314,23 @@ func FiberHapusTransaksi(c *fiber.Ctx) error {
 
 func StdAmbilSemuaTransaksiDenganPagination(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
-	datatransaksi, datacount, err := utils.GetAllTransaksiWithPagination(mconn, colltransaksi, "400010", "MRKTBUKALAPAK", 1, 10, time.Time{}, time.Now())
+	page, err := strconv.Atoi(utils.GetUrlQuery(r, "page", "1"))
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid page parameter",
+		})
+		return
+	}
+	limit, err := strconv.Atoi(utils.GetUrlQuery(r, "limit", "10"))
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid page parameter",
+		})
+		return
+	}
+	datatransaksi, datacount, err := utils.GetAllTransaksiWithPagination(mconn, colltransaksi, "400010", "MRKTBUKALAPAK", page, limit, time.Time{}, time.Now())
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
@@ -334,5 +350,6 @@ func StdAmbilSemuaTransaksiDenganPagination(w http.ResponseWriter, r *http.Reque
 		Message:    "Berhasil ambil data",
 		Data:       datatransaksi,
 		Data_Count: &datacount,
+		Page:       page,
 	})
 }
