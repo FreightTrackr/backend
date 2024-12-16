@@ -375,3 +375,28 @@ func StdLogin(w http.ResponseWriter, r *http.Request) {
 		Token:   token,
 	})
 }
+
+func StdAmbilSemuaUser(w http.ResponseWriter, r *http.Request) {
+	mconn := utils.SetConnection()
+	datauser, datacount, err := utils.GetAllUserWithPagination(mconn, collusers, 1, 10)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "GetAllDoc error: " + err.Error(),
+		})
+		return
+	}
+	if datauser == nil {
+		utils.WriteJSONResponse(w, http.StatusNotFound, models.Pesan{
+			Status:  http.StatusNotFound,
+			Message: "Data user tidak ditemukan",
+		})
+		return
+	}
+	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
+		Status:     http.StatusOK,
+		Message:    "Berhasil ambil data",
+		Data:       datauser,
+		Data_Count: &datacount,
+	})
+}
