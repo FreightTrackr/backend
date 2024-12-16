@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/FreightTrackr/backend/helpers"
 	"github.com/FreightTrackr/backend/models"
@@ -118,38 +117,19 @@ func FiberLogin(c *fiber.Ctx) error {
 		})
 	}
 
-	datauser := utils.FindUser(mconn, collusers, user)
+	token, err := utils.SignedJWT(mconn, collusers, user)
 
-	claims := jwt.MapClaims{
-		"username":      user.Username,
-		"nama":          datauser.Nama,
-		"no_telp":       datauser.No_Telp,
-		"email":         datauser.Email,
-		"role":          datauser.Role,
-		"no_pend":       datauser.No_Pend,
-		"kode_pengguna": datauser.Kode_Pelanggan,
-		"exp":           time.Now().Add(time.Hour * 2).Unix(),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-
-	privateKey, err := utils.ReadPrivateKeyFromEnv("PRIVATE_KEY")
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(models.Pesan{
 			Status:  fiber.StatusInternalServerError,
-			Message: "Error loading private key: " + err.Error(),
+			Message: err.Error(),
 		})
-	}
-
-	t, err := token.SignedString(privateKey)
-	if err != nil {
-		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(models.Pesan{
 		Status:  fiber.StatusOK,
 		Message: "Berhasil login",
-		Token:   t,
+		Token:   token,
 	})
 }
 
