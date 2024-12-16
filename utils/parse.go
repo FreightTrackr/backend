@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/FreightTrackr/backend/models"
 )
 
 func ParseDate(dateStr string, isEndDate bool) (time.Time, error) {
@@ -31,4 +33,16 @@ func WriteJSONResponse(w http.ResponseWriter, status int, v interface{}) {
 		return
 	}
 	w.Write(jsonData)
+}
+
+func ParseBody(w http.ResponseWriter, r *http.Request, v interface{}) {
+	err := json.NewDecoder(r.Body).Decode(&v)
+
+	if err != nil {
+		WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Error parsing application/json: " + err.Error(),
+		})
+		return
+	}
 }
