@@ -12,7 +12,7 @@ import (
 
 var colltransaksi = "transaksi"
 
-func AmbilSemuaTransaksiDenganPagination(c *fiber.Ctx) error {
+func FiberAmbilSemuaTransaksiDenganPagination(c *fiber.Ctx) error {
 	page, err := strconv.Atoi(c.Query("page", "1"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
@@ -79,7 +79,7 @@ func AmbilSemuaTransaksiDenganPagination(c *fiber.Ctx) error {
 	})
 }
 
-func AmbilSemuaTransaksi(c *fiber.Ctx) error {
+func FiberAmbilSemuaTransaksi(c *fiber.Ctx) error {
 	startDateStr := c.Query("start_date", "")
 	endDateStr := c.Query("end_date", "")
 	var startDate, endDate time.Time
@@ -129,7 +129,7 @@ func AmbilSemuaTransaksi(c *fiber.Ctx) error {
 	})
 }
 
-func AmbilTransaksiDenganStatusDelivered(c *fiber.Ctx) error {
+func FiberAmbilTransaksiDenganStatusDelivered(c *fiber.Ctx) error {
 	startDateStr := c.Query("start_date", "")
 	endDateStr := c.Query("end_date", "")
 	var startDate, endDate time.Time
@@ -177,7 +177,7 @@ func AmbilTransaksiDenganStatusDelivered(c *fiber.Ctx) error {
 	})
 }
 
-func TambahTransaksi(c *fiber.Ctx) error {
+func FiberTambahTransaksi(c *fiber.Ctx) error {
 	// Peringatan, kode ini belom selesai, no_resi dan id_history belom dibuat generate otomatis
 
 	mconn := utils.SetConnection()
@@ -293,7 +293,7 @@ func TambahTransaksi(c *fiber.Ctx) error {
 	})
 }
 
-func HapusTransaksi(c *fiber.Ctx) error {
+func FiberHapusTransaksi(c *fiber.Ctx) error {
 	mconn := utils.SetConnection()
 	var transaksi models.Transaksi
 	no_resi := c.Query("no_resi")
