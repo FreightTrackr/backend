@@ -438,7 +438,34 @@ func StdAmbilSemuaTransaksi(w http.ResponseWriter, r *http.Request) {
 
 func StdAmbilTransaksiDenganStatusDelivered(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
-	datatransaksi, err := utils.GetStatusDeliveredTransaksi(mconn, colltransaksi, time.Time{}, time.Now())
+	startDateStr := utils.GetUrlQuery(r, "start_date", "")
+	endDateStr := utils.GetUrlQuery(r, "end_date", "")
+
+	if startDateStr == "" || endDateStr == "" {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Masukkan parameter tanggal",
+		})
+		return
+	}
+	var startDate, endDate time.Time
+	startDate, err := utils.ParseDate(startDateStr, false)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Format start_date tidak valid: " + err.Error(),
+		})
+		return
+	}
+	endDate, err = utils.ParseDate(endDateStr, true)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Format end_date tidak valid: " + err.Error(),
+		})
+		return
+	}
+	datatransaksi, err := utils.GetStatusDeliveredTransaksi(mconn, colltransaksi, startDate, endDate)
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
