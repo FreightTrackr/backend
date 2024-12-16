@@ -363,6 +363,14 @@ func StdLogin(w http.ResponseWriter, r *http.Request) {
 
 	utils.ParseBody(w, r, &user)
 
+	if !utils.UsernameExists(mconn, collusers, user) {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Akun tidak ditemukan",
+		})
+		return
+	}
+
 	if !utils.IsPasswordValid(mconn, collusers, user) {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
