@@ -9,6 +9,11 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/FreightTrackr/backend/models"
+	"github.com/golang-jwt/jwt/v5"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // ReadPrivateKeyFromFile reads an RSA private key from a file
@@ -160,4 +165,32 @@ func CleanPEMString(pem string) string {
 	pem = strings.ReplaceAll(pem, "\n", `\n`)
 	// pem = strings.ReplaceAll(pem, "\r", `\r`)
 	return pem
+}
+
+func SignedJWT(mongoenv *mongo.Database, collname string, user models.Users) (string, error) {
+	datauser := FindUser(mongoenv, collname, user)
+
+	claims := jwt.MapClaims{
+		"username":      user.Username,
+		"nama":          datauser.Nama,
+		"no_telp":       datauser.No_Telp,
+		"email":         datauser.Email,
+		"role":          datauser.Role,
+		"no_pend":       datauser.No_Pend,
+		"kode_pengguna": datauser.Kode_Pelanggan,
+		"exp":           time.Now().Add(time.Hour * 2).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+
+	privateKey, err := ReadPrivateKeyFromEnv("PRIVATE_KEY")
+	if err != nil {
+		return "", fmt.Errorf("error loading private key: %v", err)
+	}
+
+	t, err := token.SignedString(privateKey)
+	if err != nil {
+		return "", fmt.Errorf("error signing string: %v", err)
+	}
+	return t, nil
 }
