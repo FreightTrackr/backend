@@ -284,6 +284,14 @@ func StdRegister(w http.ResponseWriter, r *http.Request) {
 
 	utils.ParseBody(w, r, &user)
 
+	if user.Username == "" || user.Password == "" || user.Nama == "" || user.No_Telp == "" || user.Email == "" || user.Role == "" {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Field wajib diisi",
+		})
+		return
+	}
+
 	hash, hashErr := helpers.HashPassword(user.Password)
 	if hashErr != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
