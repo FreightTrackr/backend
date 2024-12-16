@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/FreightTrackr/backend/models"
@@ -126,5 +127,30 @@ func FiberHapusPelanggan(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(models.Pesan{
 		Status:  fiber.StatusOK,
 		Message: "Berhasil hapus pelanggan",
+	})
+}
+
+func StdAmbilSemuaPelanggan(w http.ResponseWriter, r *http.Request) {
+	mconn := utils.SetConnection()
+	datapelanggan, datacount, err := utils.GetAllPelangganWithPagination(mconn, collpelanggan, 1, 10)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "GetAllDoc error: " + err.Error(),
+		})
+		return
+	}
+	if datapelanggan == nil {
+		utils.WriteJSONResponse(w, http.StatusNotFound, models.Pesan{
+			Status:  http.StatusNotFound,
+			Message: "Data pelanggan tidak ditemukan",
+		})
+		return
+	}
+	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
+		Status:     http.StatusOK,
+		Message:    "Berhasil ambil data",
+		Data:       datapelanggan,
+		Data_Count: &datacount,
 	})
 }
