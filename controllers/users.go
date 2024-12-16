@@ -292,6 +292,14 @@ func StdRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if strings.Contains(user.Username, " ") || strings.Contains(user.Password, " ") {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Field tidak boleh mengandung spasi",
+		})
+		return
+	}
+
 	hash, hashErr := helpers.HashPassword(user.Password)
 	if hashErr != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
