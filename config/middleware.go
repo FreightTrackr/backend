@@ -90,3 +90,8 @@ func IsAuthenticated(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
+
+func UserFromContext(ctx context.Context) (*jwt.Token, bool) {
+	token, ok := ctx.Value(userContextKey).(*jwt.Token)
+	return token, ok
+}
