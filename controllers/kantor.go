@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/FreightTrackr/backend/models"
@@ -125,5 +126,30 @@ func FiberHapusKantor(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(models.Pesan{
 		Status:  fiber.StatusOK,
 		Message: "Berhasil hapus pelanggan",
+	})
+}
+
+func StdAmbilSemuaKantor(w http.ResponseWriter, r *http.Request) {
+	mconn := utils.SetConnection()
+	datakantor, datacount, err := utils.GetAllKantorWithPagination(mconn, collkantor, 1, 10)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "GetAllDoc error: " + err.Error(),
+		})
+		return
+	}
+	if datakantor == nil {
+		utils.WriteJSONResponse(w, http.StatusNotFound, models.Pesan{
+			Status:  http.StatusNotFound,
+			Message: "Data kantor tidak ditemukan",
+		})
+		return
+	}
+	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
+		Status:     http.StatusOK,
+		Message:    "Berhasil ambil data",
+		Data:       datakantor,
+		Data_Count: &datacount,
 	})
 }
