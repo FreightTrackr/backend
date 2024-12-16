@@ -131,7 +131,23 @@ func FiberHapusKantor(c *fiber.Ctx) error {
 
 func StdAmbilSemuaKantor(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
-	datakantor, datacount, err := utils.GetAllKantorWithPagination(mconn, collkantor, 1, 10)
+	page, err := strconv.Atoi(utils.GetUrlQuery(r, "page", "1"))
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid page parameter",
+		})
+		return
+	}
+	limit, err := strconv.Atoi(utils.GetUrlQuery(r, "limit", "10"))
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid page parameter",
+		})
+		return
+	}
+	datakantor, datacount, err := utils.GetAllKantorWithPagination(mconn, collkantor, page, limit)
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
@@ -151,5 +167,6 @@ func StdAmbilSemuaKantor(w http.ResponseWriter, r *http.Request) {
 		Message:    "Berhasil ambil data",
 		Data:       datakantor,
 		Data_Count: &datacount,
+		Page:       page,
 	})
 }
