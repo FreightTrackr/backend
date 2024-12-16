@@ -300,6 +300,14 @@ func StdRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(user.Username) > 20 {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Username tidak boleh lebih dari 20 karakter",
+		})
+		return
+	}
+
 	hash, hashErr := helpers.HashPassword(user.Password)
 	if hashErr != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
