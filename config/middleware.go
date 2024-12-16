@@ -1,7 +1,9 @@
 package config
 
 import (
+	"context"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/FreightTrackr/backend/models"
@@ -9,6 +11,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
+
+type contextKey string
+
+const userContextKey contextKey = "user"
 
 func JwtMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -46,4 +52,41 @@ func JwtMiddleware() fiber.Handler {
 		c.Locals("user", token)
 		return c.Next()
 	}
+}
+
+func IsAuthenticated(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		tokenString := r.Header.Get("Authorization")
+		if tokenString == "" {
+			utils.WriteJSONResponse(w, http.StatusUnauthorized, models.Pesan{
+				Status:  http.StatusUnauthorized,
+				Message: "Authorization token required",
+			})
+			return
+		}
+		parts := strings.Split(tokenString, " ")
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			utils.WriteJSONResponse(w, http.StatusUnauthorized, models.Pesan{
+				Status:  http.StatusUnauthorized,
+				Message: "Invalid authorization format",
+			})
+			return
+		}
+		tokenString = parts[1]
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
+			return utils.ReadPublicKeyFromEnv("PUBLIC_KEY")
+		})
+		if err != nil || !token.Valid {
+			utils.WriteJSONResponse(w, http.StatusUnauthorized, models.Pesan{
+				Status:  http.StatusUnauthorized,
+				Message: "Invalid or expired token",
+			})
+			return
+		}
+		ctx := context.WithValue(r.Context(), userContextKey, token)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
