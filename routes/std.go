@@ -12,4 +12,5 @@ func StdRoute(router *http.ServeMux) {
 	router.HandleFunc("POST /std/login", controllers.StdLogin)
 	router.Handle("GET /std/users", config.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaUser)))
 	router.Handle("GET /std/session", config.IsAuthenticated(http.HandlerFunc(controllers.StdSession)))
+	router.Handle("GET /std/kantor", config.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaKantor)))
 }
