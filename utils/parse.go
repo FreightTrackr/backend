@@ -46,3 +46,12 @@ func ParseBody(w http.ResponseWriter, r *http.Request, v interface{}) {
 		return
 	}
 }
+
+func GetUrlQuery(r *http.Request, queryKey string, defaultValue string) string {
+	query := r.URL.Query()
+	v := query.Get(queryKey)
+	if v == "" {
+		return defaultValue
+	}
+	return v
+}
