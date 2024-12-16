@@ -378,7 +378,23 @@ func StdLogin(w http.ResponseWriter, r *http.Request) {
 
 func StdAmbilSemuaUser(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
-	datauser, datacount, err := utils.GetAllUserWithPagination(mconn, collusers, 1, 10)
+	page, err := strconv.Atoi(utils.GetUrlQuery(r, "page", "1"))
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid page parameter",
+		})
+		return
+	}
+	limit, err := strconv.Atoi(utils.GetUrlQuery(r, "limit", "10"))
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid page parameter",
+		})
+		return
+	}
+	datauser, datacount, err := utils.GetAllUserWithPagination(mconn, collusers, page, limit)
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
@@ -398,5 +414,6 @@ func StdAmbilSemuaUser(w http.ResponseWriter, r *http.Request) {
 		Message:    "Berhasil ambil data",
 		Data:       datauser,
 		Data_Count: &datacount,
+		Page:       page,
 	})
 }
