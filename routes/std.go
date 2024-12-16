@@ -8,4 +8,5 @@ import (
 
 func StdRoute(router *http.ServeMux) {
 	router.HandleFunc("POST /std/register", controllers.StdRegister)
+	router.HandleFunc("POST /std/login", controllers.StdLogin)
 }
