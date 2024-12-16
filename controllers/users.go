@@ -324,6 +324,14 @@ func StdRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if user.Role != "admin" && user.Role != "kantor" && user.Role != "pelanggan" {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Role tidak tersedia",
+		})
+		return
+	}
+
 	hash, hashErr := helpers.HashPassword(user.Password)
 	if hashErr != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
