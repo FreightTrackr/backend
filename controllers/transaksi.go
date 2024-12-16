@@ -382,3 +382,26 @@ func StdAmbilSemuaTransaksiDenganPagination(w http.ResponseWriter, r *http.Reque
 		Page:       page,
 	})
 }
+func StdAmbilSemuaTransaksi(w http.ResponseWriter, r *http.Request) {
+	mconn := utils.SetConnection()
+	datatransaksi, err := utils.GetAllTransaksi(mconn, colltransaksi, "400010", "MRKTBUKALAPAK", time.Time{}, time.Now())
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "GetAllDoc error: " + err.Error(),
+		})
+		return
+	}
+	if datatransaksi == nil {
+		utils.WriteJSONResponse(w, http.StatusNotFound, models.Pesan{
+			Status:  http.StatusNotFound,
+			Message: "Data transaksi tidak ditemukan",
+		})
+		return
+	}
+	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
+		Status:  http.StatusOK,
+		Message: "Berhasil ambil data",
+		Data:    datatransaksi,
+	})
+}
