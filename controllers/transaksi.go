@@ -330,7 +330,36 @@ func StdAmbilSemuaTransaksiDenganPagination(w http.ResponseWriter, r *http.Reque
 		})
 		return
 	}
-	datatransaksi, datacount, err := utils.GetAllTransaksiWithPagination(mconn, colltransaksi, "400010", "MRKTBUKALAPAK", page, limit, time.Time{}, time.Now())
+	startDateStr := utils.GetUrlQuery(r, "start_date", "")
+	endDateStr := utils.GetUrlQuery(r, "end_date", "")
+	no_pend := utils.GetUrlQuery(r, "no_pend", "")
+	kode_pelanggan := utils.GetUrlQuery(r, "kode_pelanggan", "")
+
+	if startDateStr == "" || endDateStr == "" {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Masukkan parameter tanggal",
+		})
+		return
+	}
+	var startDate, endDate time.Time
+	startDate, err = utils.ParseDate(startDateStr, false)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Format start_date tidak valid: " + err.Error(),
+		})
+		return
+	}
+	endDate, err = utils.ParseDate(endDateStr, true)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Format end_date tidak valid: " + err.Error(),
+		})
+		return
+	}
+	datatransaksi, datacount, err := utils.GetAllTransaksiWithPagination(mconn, colltransaksi, no_pend, kode_pelanggan, page, limit, startDate, endDate)
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
