@@ -14,7 +14,7 @@ import (
 
 var collusers = "users"
 
-func Register(c *fiber.Ctx) error {
+func FiberRegister(c *fiber.Ctx) error {
 	mconn := utils.SetConnection()
 	var user models.Users
 
@@ -91,7 +91,7 @@ func Register(c *fiber.Ctx) error {
 	})
 }
 
-func Login(c *fiber.Ctx) error {
+func FiberLogin(c *fiber.Ctx) error {
 	mconn := utils.SetConnection()
 	var user models.Users
 
@@ -152,7 +152,7 @@ func Login(c *fiber.Ctx) error {
 	})
 }
 
-func AmbilSemuaUser(c *fiber.Ctx) error {
+func FiberAmbilSemuaUser(c *fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	limit, _ := strconv.Atoi(c.Query("limit", "10"))
 	mconn := utils.SetConnection()
@@ -178,7 +178,7 @@ func AmbilSemuaUser(c *fiber.Ctx) error {
 	})
 }
 
-func EditUser(c *fiber.Ctx) error {
+func FiberEditUser(c *fiber.Ctx) error {
 	mconn := utils.SetConnection()
 	var user models.Users
 
@@ -239,7 +239,7 @@ func EditUser(c *fiber.Ctx) error {
 	})
 }
 
-func HapusUser(c *fiber.Ctx) error {
+func FiberHapusUser(c *fiber.Ctx) error {
 	mconn := utils.SetConnection()
 	var user models.Users
 	username := c.Query("username")
@@ -257,7 +257,7 @@ func HapusUser(c *fiber.Ctx) error {
 	})
 }
 
-func Session(c *fiber.Ctx) error {
+func FiberSession(c *fiber.Ctx) error {
 	user := c.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	var session models.Users
