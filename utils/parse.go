@@ -1,6 +1,10 @@
 package utils
 
-import "time"
+import (
+	"encoding/json"
+	"net/http"
+	"time"
+)
 
 func ParseDate(dateStr string, isEndDate bool) (time.Time, error) {
 	if dateStr == "" {
@@ -15,4 +19,16 @@ func ParseDate(dateStr string, isEndDate bool) (time.Time, error) {
 		return time.Time{}, err
 	}
 	return date, nil
+}
+
+func WriteJSONResponse(w http.ResponseWriter, status int, v interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+
+	jsonData, err := json.Marshal(v)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(jsonData)
 }
