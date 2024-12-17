@@ -452,3 +452,11 @@ func StdSession(w http.ResponseWriter, r *http.Request) {
 		Data:    session,
 	})
 }
+
+func StdGetRole(w http.ResponseWriter, r *http.Request) {
+	role := config.GetRole(w, r)
+	utils.WriteJSONResponse(w, http.StatusUnauthorized, models.Pesan{
+		Status:  http.StatusUnauthorized,
+		Message: role,
+	})
+}
