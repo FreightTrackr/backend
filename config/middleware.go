@@ -95,3 +95,16 @@ func UserFromContext(ctx context.Context) (*jwt.Token, bool) {
 	token, ok := ctx.Value(userContextKey).(*jwt.Token)
 	return token, ok
 }
+
+func GetRole(w http.ResponseWriter, r *http.Request) string {
+	token, ok := UserFromContext(r.Context())
+	if !ok {
+		return "Authorization token required"
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return "Invalid token"
+	}
+	role := claims["role"].(string)
+	return role
+}
