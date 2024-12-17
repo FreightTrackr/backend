@@ -194,7 +194,3 @@ func SignedJWT(mongoenv *mongo.Database, collname string, user models.Users) (st
 	}
 	return t, nil
 }
-
-func GetRole(mongoenv *mongo.Database, collname string, user models.Users) string {
-	return "asd"
-}
