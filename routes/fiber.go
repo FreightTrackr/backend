@@ -1,15 +1,15 @@
 package routes
 
 import (
-	"github.com/FreightTrackr/backend/config"
 	"github.com/FreightTrackr/backend/controllers"
+	"github.com/FreightTrackr/backend/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
 func FiberRoute(page *fiber.App) {
 	page.Post("/fiber/register", controllers.FiberRegister)
 	page.Post("/fiber/login", controllers.FiberLogin)
-	page.Use(config.JwtMiddleware())
+	page.Use(middleware.JwtMiddleware())
 	page.Get("/fiber/users", controllers.FiberAmbilSemuaUser)
 	page.Put("/fiber/users", controllers.FiberEditUser)
 	page.Delete("/fiber/users", controllers.FiberHapusUser)
