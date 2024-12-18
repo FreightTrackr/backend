@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/FreightTrackr/backend/config"
+	"github.com/FreightTrackr/backend/middleware"
 	"github.com/FreightTrackr/backend/utils"
 )
 
@@ -54,7 +54,7 @@ func TestReadPrivateKeyFromEnv(t *testing.T) {
 }
 
 func TestReadPrivateKeyFromEnvaaa(t *testing.T) {
-	config.LoadEnv("../.env")
+	middleware.LoadEnv("../.env")
 	PRIVATE_KEY := os.Getenv("PRIVATE_KEY")
 	PUBLIC_KEY := os.Getenv("PUBLIC_KEY")
 	fmt.Println("PRIVATE_KEY")

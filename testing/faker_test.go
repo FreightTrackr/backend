@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/FreightTrackr/backend/config"
+	"github.com/FreightTrackr/backend/middleware"
 	"github.com/FreightTrackr/backend/utils"
 )
 
 func TestRegisterDummyUsers(t *testing.T) {
-	config.LoadEnv("../.env")
+	middleware.LoadEnv("../.env")
 	mconn := utils.SetConnection()
 	apalah, err := utils.DummyUserGenerator(50, mconn)
 	if err != nil {
@@ -19,7 +19,7 @@ func TestRegisterDummyUsers(t *testing.T) {
 }
 
 func TestGenerateDataDummyTransaksi(t *testing.T) {
-	config.LoadEnv("../.env")
+	middleware.LoadEnv("../.env")
 	mconn := utils.SetConnection()
 	apalah, err := utils.DummyTransaksiGenerator(50, mconn)
 	if err != nil {
@@ -28,7 +28,7 @@ func TestGenerateDataDummyTransaksi(t *testing.T) {
 	fmt.Println(apalah)
 }
 func TestGenerateDataDummyKantor(t *testing.T) {
-	config.LoadEnv("../.env")
+	middleware.LoadEnv("../.env")
 	mconn := utils.SetConnection()
 	apalah, err := utils.DummyKantorGenerator(mconn)
 	if err != nil {
@@ -37,7 +37,7 @@ func TestGenerateDataDummyKantor(t *testing.T) {
 	fmt.Println(apalah)
 }
 func TestGenerateDataDummyPelanggan(t *testing.T) {
-	config.LoadEnv("../.env")
+	middleware.LoadEnv("../.env")
 	mconn := utils.SetConnection()
 	apalah, err := utils.DummyPelangganGenerator(mconn)
 	if err != nil {
@@ -46,7 +46,7 @@ func TestGenerateDataDummyPelanggan(t *testing.T) {
 	fmt.Println(apalah)
 }
 func TestGenerateDataDummyHistory(t *testing.T) {
-	config.LoadEnv("../.env")
+	middleware.LoadEnv("../.env")
 	mconn := utils.SetConnection()
 	apalah, err := utils.DummyHistoryGenerator(50, mconn)
 	if err != nil {
