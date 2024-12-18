@@ -3,7 +3,7 @@ package gcf
 import (
 	"net/http"
 
-	"github.com/FreightTrackr/backend/config"
+	"github.com/FreightTrackr/backend/middleware"
 	"github.com/FreightTrackr/backend/routes"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/gofiber/fiber/v2"
@@ -22,7 +22,7 @@ func Befous(w http.ResponseWriter, r *http.Request) {
 func InitRoutes(w http.ResponseWriter, r *http.Request) {
 	app := fiber.New()
 
-	app.Use(cors.New(config.Cors))
+	app.Use(cors.New(middleware.Cors))
 
 	routes.UserRoute(app)
 	routes.TransaksiRoute(app)
