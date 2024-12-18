@@ -1,18 +1,18 @@
 package main
 
 import (
-	"github.com/FreightTrackr/backend/config"
+	"github.com/FreightTrackr/backend/middleware"
 	"github.com/FreightTrackr/backend/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 func main() {
-	config.LoadEnv(".env")
+	middleware.LoadEnv(".env")
 
 	app := fiber.New()
 
-	app.Use(cors.New(config.CorsAllowAll))
+	app.Use(cors.New(middleware.CorsAllowAll))
 
 	routes.FiberRoute(app)
 

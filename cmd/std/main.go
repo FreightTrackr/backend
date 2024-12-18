@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/FreightTrackr/backend/config"
+	"github.com/FreightTrackr/backend/middleware"
 	"github.com/FreightTrackr/backend/routes"
 )
 
 func main() {
-	config.LoadEnv(".env")
+	middleware.LoadEnv(".env")
 	app := http.NewServeMux()
 	routes.StdRoute(app)
 	server := http.Server{
