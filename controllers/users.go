@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/FreightTrackr/backend/config"
 	"github.com/FreightTrackr/backend/helpers"
+	"github.com/FreightTrackr/backend/middleware"
 	"github.com/FreightTrackr/backend/models"
 	"github.com/FreightTrackr/backend/utils"
 	"github.com/gofiber/fiber/v2"
@@ -420,7 +420,7 @@ func StdAmbilSemuaUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func StdSession(w http.ResponseWriter, r *http.Request) {
-	token, ok := config.UserFromContext(r.Context())
+	token, ok := middleware.UserFromContext(r.Context())
 	if !ok {
 		utils.WriteJSONResponse(w, http.StatusUnauthorized, models.Pesan{
 			Status:  http.StatusUnauthorized,
@@ -454,7 +454,7 @@ func StdSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func StdGetRole(w http.ResponseWriter, r *http.Request) {
-	role := config.GetRole(w, r)
+	role := middleware.GetRole(w, r)
 	utils.WriteJSONResponse(w, http.StatusUnauthorized, models.Pesan{
 		Status:  http.StatusUnauthorized,
 		Message: role,
