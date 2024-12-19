@@ -460,3 +460,36 @@ func StdGetRole(w http.ResponseWriter, r *http.Request) {
 		Message: role,
 	})
 }
+
+func StdEditUser(c *fiber.Ctx) error {
+	mconn := utils.SetConnection()
+	var user models.Users
+
+	err := c.BodyParser(&user)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Error parsing application/json: " + err.Error(),
+		})
+	}
+
+	if user.Password != "" {
+		hash, hashErr := helpers.HashPassword(user.Password)
+		if hashErr != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+				Status:  fiber.StatusBadRequest,
+				Message: "Gagal hash password: " + hashErr.Error(),
+			})
+		}
+		user.Password = hash
+	} else {
+		datauser := utils.FindUser(mconn, collusers, user)
+		user.Password = datauser.Password
+	}
+
+	utils.InsertUser(mconn, collusers, user)
+	return c.Status(fiber.StatusOK).JSON(models.Pesan{
+		Status:  fiber.StatusOK,
+		Message: "Berhasil update",
+	})
+}
