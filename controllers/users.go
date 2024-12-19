@@ -473,6 +473,34 @@ func StdEditUser(c *fiber.Ctx) error {
 		})
 	}
 
+	if user.Username == "" || user.Nama == "" || user.No_Telp == "" || user.Email == "" || user.Role == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Field wajib diisi",
+		})
+	}
+
+	if len(user.Password) < 8 || len(user.Password) > 20 {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Password harus antara 8 sampai 20 karakter",
+		})
+	}
+
+	if len(user.Nama) > 55 {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Nama tidak boleh lebih dari 55 karakter",
+		})
+	}
+
+	if !utils.UsernameExists(mconn, collusers, user) {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Username tidak ditemukan",
+		})
+	}
+
 	if user.Password != "" {
 		hash, hashErr := helpers.HashPassword(user.Password)
 		if hashErr != nil {
