@@ -11,6 +11,7 @@ func StdRoute(router *http.ServeMux) {
 	router.Handle("POST /std/register", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdRegister)))
 	router.HandleFunc("POST /std/login", controllers.StdLogin)
 	router.Handle("GET /std/users", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaUser)))
+	router.Handle("PUT /std/users", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdEditUser)))
 	router.Handle("GET /std/session", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdSession)))
 	router.Handle("GET /std/kantor", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaKantor)))
 	router.Handle("GET /std/pelanggan", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaPelanggan)))
