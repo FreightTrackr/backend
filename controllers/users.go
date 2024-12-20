@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -465,49 +466,55 @@ func StdEditUser(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
 	var user models.Users
 
-	err := c.BodyParser(&user)
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
-			Status:  fiber.StatusBadRequest,
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
 			Message: "Error parsing application/json: " + err.Error(),
 		})
+		return
 	}
 
 	if user.Username == "" || user.Nama == "" || user.No_Telp == "" || user.Email == "" || user.Role == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
-			Status:  fiber.StatusBadRequest,
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
 			Message: "Field wajib diisi",
 		})
+		return
 	}
 
 	if len(user.Password) < 8 || len(user.Password) > 20 {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
-			Status:  fiber.StatusBadRequest,
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
 			Message: "Password harus antara 8 sampai 20 karakter",
 		})
+		return
 	}
 
 	if len(user.Nama) > 55 {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
-			Status:  fiber.StatusBadRequest,
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
 			Message: "Nama tidak boleh lebih dari 55 karakter",
 		})
+		return
 	}
 
 	if !utils.UsernameExists(mconn, collusers, user) {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
-			Status:  fiber.StatusBadRequest,
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
 			Message: "Username tidak ditemukan",
 		})
+		return
 	}
 
 	if user.Password != "" {
 		hash, hashErr := helpers.HashPassword(user.Password)
 		if hashErr != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
-				Status:  fiber.StatusBadRequest,
+			utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+				Status:  http.StatusBadRequest,
 				Message: "Gagal hash password: " + hashErr.Error(),
 			})
+			return
 		}
 		user.Password = hash
 	} else {
@@ -516,8 +523,8 @@ func StdEditUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.InsertUser(mconn, collusers, user)
-	return c.Status(fiber.StatusOK).JSON(models.Pesan{
-		Status:  fiber.StatusOK,
+	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
+		Status:  http.StatusOK,
 		Message: "Berhasil update",
 	})
 }
