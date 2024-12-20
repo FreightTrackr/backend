@@ -461,7 +461,7 @@ func StdGetRole(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func StdEditUser(c *fiber.Ctx) error {
+func StdEditUser(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
 	var user models.Users
 
