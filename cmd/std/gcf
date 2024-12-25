@@ -1,0 +1,20 @@
+package helloworld
+
+import (
+	"net/http"
+
+	"github.com/FreightTrackr/backend/middleware"
+	"github.com/FreightTrackr/backend/routes"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+)
+
+func init() {
+	functions.HTTP("Befous", Befous)
+}
+
+func Befous(w http.ResponseWriter, r *http.Request) {
+	app := http.NewServeMux()
+	routes.StdRoute(app)
+	wrappedApp := middleware.CorsAllowAll(app)
+	wrappedApp.ServeHTTP(w, r)
+}
