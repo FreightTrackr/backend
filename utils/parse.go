@@ -2,7 +2,9 @@ package utils
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
+	"runtime"
 	"time"
 
 	"github.com/FreightTrackr/backend/models"
@@ -54,4 +56,17 @@ func GetUrlQuery(r *http.Request, queryKey string, defaultValue string) string {
 		return defaultValue
 	}
 	return v
+}
+
+func LogRequestDetails(start time.Time, message string) {
+	duration := time.Since(start)
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	log.Printf("Response Time: %.2f ms | Alloc = %.2f MiB | TotalAlloc = %.2f MiB | Sys = %.2f MiB | NumGC = %v | Message: %s\n",
+		duration.Seconds()*1000,
+		float64(m.Alloc)/1024/1024,
+		float64(m.TotalAlloc)/1024/1024,
+		float64(m.Sys)/1024/1024,
+		m.NumGC,
+		message)
 }
