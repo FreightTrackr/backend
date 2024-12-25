@@ -313,6 +313,7 @@ func FiberHapusTransaksi(c *fiber.Ctx) error {
 }
 
 func StdAmbilSemuaTransaksiDenganPagination(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	mconn := utils.SetConnection()
 	page, err := strconv.Atoi(utils.GetUrlQuery(r, "page", "1"))
 	if err != nil {
@@ -381,9 +382,11 @@ func StdAmbilSemuaTransaksiDenganPagination(w http.ResponseWriter, r *http.Reque
 		Data_Count: &datacount,
 		Page:       page,
 	})
+	utils.LogRequestDetails(start, "Berhasil ambil data")
 }
 
 func StdAmbilSemuaTransaksi(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
 	mconn := utils.SetConnection()
 	startDateStr := utils.GetUrlQuery(r, "start_date", "")
 	endDateStr := utils.GetUrlQuery(r, "end_date", "")
@@ -434,6 +437,7 @@ func StdAmbilSemuaTransaksi(w http.ResponseWriter, r *http.Request) {
 		Message: "Berhasil ambil data",
 		Data:    datatransaksi,
 	})
+	utils.LogRequestDetails(start, "Berhasil ambil data")
 }
 
 func StdAmbilTransaksiDenganStatusDelivered(w http.ResponseWriter, r *http.Request) {
