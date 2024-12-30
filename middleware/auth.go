@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -11,10 +10,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
-
-type contextKey string
-
-const userContextKey contextKey = "user"
 
 func JwtMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -86,25 +81,6 @@ func IsAuthenticated(next http.Handler) http.Handler {
 			})
 			return
 		}
-		ctx := context.WithValue(r.Context(), userContextKey, token)
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, r)
 	})
-}
-
-func UserFromContext(ctx context.Context) (*jwt.Token, bool) {
-	token, ok := ctx.Value(userContextKey).(*jwt.Token)
-	return token, ok
-}
-
-func GetRole(w http.ResponseWriter, r *http.Request) string {
-	token, ok := UserFromContext(r.Context())
-	if !ok {
-		return "Authorization token required"
-	}
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
-		return "Invalid token"
-	}
-	role := claims["role"].(string)
-	return role
 }
