@@ -7,6 +7,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -210,4 +211,28 @@ func FiberDecodeJWT(c *fiber.Ctx) models.Users {
 	session.Kode_Pelanggan = claims["kode_pengguna"].(string)
 
 	return session
+}
+
+func StdDecodeJWT(r *http.Request) (models.Users, error) {
+	var session models.Users
+	tokenString := r.Header.Get("Authorization")
+	parts := strings.Split(tokenString, " ")
+	tokenString = parts[1]
+	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return ReadPublicKeyFromEnv("PUBLIC_KEY")
+	})
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return session, fmt.Errorf("invalid token")
+	}
+
+	session.Username = claims["username"].(string)
+	session.Nama = claims["nama"].(string)
+	session.No_Telp = claims["no_telp"].(string)
+	session.Email = claims["email"].(string)
+	session.Role = claims["role"].(string)
+	session.No_Pend = claims["no_pend"].(string)
+	session.Kode_Pelanggan = claims["kode_pengguna"].(string)
+
+	return session, nil
 }
