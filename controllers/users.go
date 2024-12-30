@@ -7,11 +7,10 @@ import (
 	"strings"
 
 	"github.com/FreightTrackr/backend/helpers"
-	"github.com/FreightTrackr/backend/middleware"
 	"github.com/FreightTrackr/backend/models"
 	"github.com/FreightTrackr/backend/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt"
 )
 
 var collusers = "users"
@@ -451,14 +450,6 @@ func StdSession(w http.ResponseWriter, r *http.Request) {
 		Status:  http.StatusOK,
 		Message: "Berikut data session anda",
 		Data:    session,
-	})
-}
-
-func StdGetRole(w http.ResponseWriter, r *http.Request) {
-	role := middleware.GetRole(w, r)
-	utils.WriteJSONResponse(w, http.StatusUnauthorized, models.Pesan{
-		Status:  http.StatusUnauthorized,
-		Message: role,
 	})
 }
 
