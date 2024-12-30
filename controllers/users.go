@@ -240,18 +240,7 @@ func FiberHapusUser(c *fiber.Ctx) error {
 }
 
 func FiberSession(c *fiber.Ctx) error {
-	user := c.Locals("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	var session models.Users
-
-	session.Username = claims["username"].(string)
-	session.Nama = claims["nama"].(string)
-	session.No_Telp = claims["no_telp"].(string)
-	session.Email = claims["email"].(string)
-	session.Role = claims["role"].(string)
-	session.No_Pend = claims["no_pend"].(string)
-	session.Kode_Pelanggan = claims["kode_pengguna"].(string)
-
+	session := utils.FiberDecodeJWT(c)
 	return c.Status(fiber.StatusOK).JSON(models.Pesan{
 		Status:  fiber.StatusOK,
 		Message: "Berikut data session anda",
