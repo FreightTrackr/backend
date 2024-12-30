@@ -10,7 +10,6 @@ import (
 	"github.com/FreightTrackr/backend/models"
 	"github.com/FreightTrackr/backend/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt"
 )
 
 var collusers = "users"
@@ -409,31 +408,15 @@ func StdAmbilSemuaUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func StdSession(w http.ResponseWriter, r *http.Request) {
-	token, ok := middleware.UserFromContext(r.Context())
-	if !ok {
-		utils.WriteJSONResponse(w, http.StatusUnauthorized, models.Pesan{
-			Status:  http.StatusUnauthorized,
-			Message: "Authorization token required",
-		})
-		return
-	}
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
-		utils.WriteJSONResponse(w, http.StatusUnauthorized, models.Pesan{
-			Status:  http.StatusUnauthorized,
-			Message: "Invalid token",
-		})
-		return
-	}
 	var session models.Users
-
-	session.Username = claims["username"].(string)
-	session.Nama = claims["nama"].(string)
-	session.No_Telp = claims["no_telp"].(string)
-	session.Email = claims["email"].(string)
-	session.Role = claims["role"].(string)
-	session.No_Pend = claims["no_pend"].(string)
-	session.Kode_Pelanggan = claims["kode_pengguna"].(string)
+	session, err := utils.StdDecodeJWT(r)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Error decode token: " + err.Error(),
+		})
+		return
+	}
 
 	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
 		Status:  http.StatusOK,
