@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/FreightTrackr/backend/models"
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -193,4 +194,20 @@ func SignedJWT(mongoenv *mongo.Database, collname string, user models.Users) (st
 		return "", fmt.Errorf("error signing string: %v", err)
 	}
 	return t, nil
+}
+
+func FiberDecodeJWT(c *fiber.Ctx) models.Users {
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	var session models.Users
+
+	session.Username = claims["username"].(string)
+	session.Nama = claims["nama"].(string)
+	session.No_Telp = claims["no_telp"].(string)
+	session.Email = claims["email"].(string)
+	session.Role = claims["role"].(string)
+	session.No_Pend = claims["no_pend"].(string)
+	session.Kode_Pelanggan = claims["kode_pengguna"].(string)
+
+	return session
 }
