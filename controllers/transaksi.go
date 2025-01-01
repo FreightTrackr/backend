@@ -440,6 +440,8 @@ func StdAmbilTransaksiDenganStatusDelivered(w http.ResponseWriter, r *http.Reque
 	mconn := utils.SetConnection()
 	startDateStr := utils.GetUrlQuery(r, "start_date", "")
 	endDateStr := utils.GetUrlQuery(r, "end_date", "")
+	no_pend := utils.GetUrlQuery(r, "no_pend", "")
+	kode_pelanggan := utils.GetUrlQuery(r, "kode_pelanggan", "")
 
 	if startDateStr == "" || endDateStr == "" {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
@@ -465,7 +467,7 @@ func StdAmbilTransaksiDenganStatusDelivered(w http.ResponseWriter, r *http.Reque
 		})
 		return
 	}
-	datatransaksi, err := utils.GetStatusDeliveredTransaksi(mconn, colltransaksi, startDate, endDate)
+	datatransaksi, err := utils.GetStatusDeliveredTransaksi(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
