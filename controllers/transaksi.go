@@ -134,6 +134,8 @@ func FiberAmbilTransaksiDenganStatusDelivered(c *fiber.Ctx) error {
 	startDateStr := c.Query("start_date", "")
 	endDateStr := c.Query("end_date", "")
 	var startDate, endDate time.Time
+	no_pend := c.Query("no_pend", "")
+	kode_pelanggan := c.Query("kode_pelanggan", "")
 
 	if startDateStr == "" || endDateStr == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
@@ -158,7 +160,7 @@ func FiberAmbilTransaksiDenganStatusDelivered(c *fiber.Ctx) error {
 		})
 	}
 	mconn := utils.SetConnection()
-	datatransaksi, err := utils.GetStatusDeliveredTransaksi(mconn, colltransaksi, startDate, endDate)
+	datatransaksi, err := utils.GetStatusDeliveredTransaksi(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
 			Status:  fiber.StatusBadRequest,
