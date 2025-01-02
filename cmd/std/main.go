@@ -14,7 +14,7 @@ func main() {
 	routes.StdRoute(app)
 	server := http.Server{
 		Addr:    ":3000",
-		Handler: app,
+		Handler: middleware.StdCors(app),
 	}
 	fmt.Println("Starting server on port :3000")
 	server.ListenAndServe()
