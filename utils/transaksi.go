@@ -33,6 +33,13 @@ func GetAllTransaksi(mongoenv *mongo.Database, collname, no_pend, kode_pelanggan
 	return helpers.GetAllDocByFilter[models.Transaksi](mongoenv, collname, filter)
 }
 
+func GetTransaksiTesting(mongoenv *mongo.Database, collname string, limit int, startDate, endDate time.Time) ([]models.Transaksi, error) {
+	filter := bson.M{
+		"tanggal_kirim": bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	return helpers.GetDocTesting[models.Transaksi](mongoenv, collname, limit, filter)
+}
+
 func GetStatusDeliveredTransaksi(mongoenv *mongo.Database, collname, no_pend, kode_pelanggan string, startDate, endDate time.Time) ([]models.Transaksi, error) {
 	filter := bson.M{
 		"tanggal_kirim": bson.M{"$gte": startDate, "$lte": endDate},
