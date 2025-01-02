@@ -12,7 +12,7 @@ func main() {
 
 	app := fiber.New()
 
-	app.Use(cors.New(middleware.CorsAllowAll))
+	app.Use(cors.New(middleware.FiberCors))
 
 	routes.FiberRoute(app)
 
