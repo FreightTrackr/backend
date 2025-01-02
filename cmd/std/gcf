@@ -15,6 +15,6 @@ func init() {
 func Befous(w http.ResponseWriter, r *http.Request) {
 	app := http.NewServeMux()
 	routes.StdRoute(app)
-	wrappedApp := middleware.CorsAllowAll(app)
+	wrappedApp := middleware.StdCors(app)
 	wrappedApp.ServeHTTP(w, r)
 }
