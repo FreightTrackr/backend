@@ -25,4 +25,5 @@ func FiberRoute(page *fiber.App) {
 	page.Get("/fiber/transaksidelivered", controllers.FiberAmbilTransaksiDenganStatusDelivered)
 	page.Post("/fiber/transaksi", controllers.FiberTambahTransaksi)
 	page.Delete("/fiber/transaksi", controllers.FiberHapusTransaksi)
+	page.Get("/fiber/testing", controllers.FiberTesting)
 }
