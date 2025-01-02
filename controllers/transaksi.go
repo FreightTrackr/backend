@@ -314,6 +314,61 @@ func FiberHapusTransaksi(c *fiber.Ctx) error {
 	})
 }
 
+func FiberTesting(c *fiber.Ctx) error {
+	limit, err := strconv.Atoi(c.Query("limit", "10"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Invalid limit parameter",
+		})
+	}
+	startDateStr := c.Query("start_date", "")
+	endDateStr := c.Query("end_date", "")
+	var startDate, endDate time.Time
+
+	if startDateStr == "" || endDateStr == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Masukkan parameter tanggal",
+		})
+	}
+
+	startDate, err = utils.ParseDate(startDateStr, false)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Format Start_date tidak valid: " + err.Error(),
+		})
+	}
+
+	endDate, err = utils.ParseDate(endDateStr, true)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "Format end_date tidak valid: " + err.Error(),
+		})
+	}
+	mconn := utils.SetConnection()
+	datatransaksi, err := utils.GetTransaksiTesting(mconn, colltransaksi, limit, startDate, endDate)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Pesan{
+			Status:  fiber.StatusBadRequest,
+			Message: "GetAllDoc error: " + err.Error(),
+		})
+	}
+	if datatransaksi == nil {
+		return c.Status(fiber.StatusNotFound).JSON(models.Pesan{
+			Status:  fiber.StatusNotFound,
+			Message: "Data transaksi tidak ditemukan",
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(models.Pesan{
+		Status:  fiber.StatusOK,
+		Message: "Berhasil ambil data",
+		Data:    datatransaksi,
+	})
+}
+
 func StdAmbilSemuaTransaksiDenganPagination(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
 	page, err := strconv.Atoi(utils.GetUrlQuery(r, "page", "1"))
