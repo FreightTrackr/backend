@@ -17,6 +17,10 @@ func MongoConnect(mconn models.DBInfo) (db *mongo.Database) {
 	if err != nil {
 		fmt.Printf("Error connecting to MongoDB: %v", err)
 	}
+	defer client.Disconnect(context.TODO())
+	if err := client.Ping(context.TODO(), nil); err != nil {
+		fmt.Printf("Error pinging MongoDB: %v", err)
+	}
 	return client.Database(mconn.DBName)
 }
 
@@ -44,7 +48,8 @@ func GetOneLatestDoc[T any](db *mongo.Database, collection string, filter bson.M
 }
 
 func GetAllDocByFilter[T any](db *mongo.Database, collection string, filter bson.M) (doc []T, err error) {
-	ctx := context.TODO()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	cur, err := db.Collection(collection).Find(ctx, filter)
 	if err != nil {
 		fmt.Printf("GetAllDoc: %v\n", err)
@@ -60,7 +65,8 @@ func GetAllDocByFilter[T any](db *mongo.Database, collection string, filter bson
 }
 
 func GetDocTesting[T any](db *mongo.Database, collection string, limit int, filter bson.M) (doc []T, err error) {
-	ctx := context.TODO()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	findOptions := options.Find()
 	findOptions.SetLimit(int64(limit))
 	cur, err := db.Collection(collection).Find(ctx, filter, findOptions)
@@ -78,7 +84,8 @@ func GetDocTesting[T any](db *mongo.Database, collection string, limit int, filt
 }
 
 func GetAllDocByFilterWithPagination[T any](db *mongo.Database, collection string, page, limit int, filter bson.M) (doc []T, datacount models.DataCount, err error) {
-	ctx := context.TODO()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	findOptions := options.Find()
 	findOptions.SetSkip(int64((page - 1) * limit))
 	findOptions.SetLimit(int64(limit))
@@ -102,7 +109,8 @@ func GetAllDocByFilterWithPagination[T any](db *mongo.Database, collection strin
 }
 
 func GetAllDoc[T any](db *mongo.Database, collection string) (doc []T, err error) {
-	ctx := context.TODO()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	cur, err := db.Collection(collection).Find(ctx, bson.M{})
 	if err != nil {
 		fmt.Printf("GetAllDoc: %v\n", err)
@@ -118,7 +126,8 @@ func GetAllDoc[T any](db *mongo.Database, collection string) (doc []T, err error
 }
 
 func GetAllDocWithPagination[T any](db *mongo.Database, collection string, page, limit int) (doc []T, datacount models.DataCount, err error) {
-	ctx := context.TODO()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	findOptions := options.Find()
 	findOptions.SetSkip(int64((page - 1) * limit))
 	findOptions.SetLimit(int64(limit))
@@ -142,7 +151,8 @@ func GetAllDocWithPagination[T any](db *mongo.Database, collection string, page,
 }
 
 func GetDataForDashboard[T any](db *mongo.Database, collection, no_pend, kode_pelanggan string, page, limit int, startDate, endDate time.Time) (docs []T, datacount models.DataCount, err error) {
-	ctx := context.TODO()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	findOptions := options.Find()
 	findOptions.SetSkip(int64((page - 1) * limit))
 	findOptions.SetLimit(int64(limit))
@@ -223,7 +233,8 @@ func GetDataForDashboard[T any](db *mongo.Database, collection, no_pend, kode_pe
 }
 
 func GetAllDistinctDoc(db *mongo.Database, filter bson.M, fieldname, collection string) (doc []any) {
-	ctx := context.TODO()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	doc, err := db.Collection(collection).Distinct(ctx, fieldname, filter)
 	if err != nil {
 		fmt.Printf("GetAllDistinctDoc: %v\n", err)
