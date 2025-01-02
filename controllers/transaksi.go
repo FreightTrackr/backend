@@ -490,3 +490,62 @@ func StdAmbilTransaksiDenganStatusDelivered(w http.ResponseWriter, r *http.Reque
 		Data:    datatransaksi,
 	})
 }
+
+func StdTesting(w http.ResponseWriter, r *http.Request) {
+	mconn := utils.SetConnection()
+	limit, err := strconv.Atoi(utils.GetUrlQuery(r, "limit", "10"))
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid page parameter",
+		})
+		return
+	}
+	startDateStr := utils.GetUrlQuery(r, "start_date", "")
+	endDateStr := utils.GetUrlQuery(r, "end_date", "")
+
+	if startDateStr == "" || endDateStr == "" {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Masukkan parameter tanggal",
+		})
+		return
+	}
+	var startDate, endDate time.Time
+	startDate, err = utils.ParseDate(startDateStr, false)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Format start_date tidak valid: " + err.Error(),
+		})
+		return
+	}
+	endDate, err = utils.ParseDate(endDateStr, true)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Format end_date tidak valid: " + err.Error(),
+		})
+		return
+	}
+	datatransaksi, err := utils.GetTransaksiTesting(mconn, colltransaksi, limit, startDate, endDate)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "GetAllDoc error: " + err.Error(),
+		})
+		return
+	}
+	if datatransaksi == nil {
+		utils.WriteJSONResponse(w, http.StatusNotFound, models.Pesan{
+			Status:  http.StatusNotFound,
+			Message: "Data transaksi tidak ditemukan",
+		})
+		return
+	}
+	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
+		Status:  http.StatusOK,
+		Message: "Berhasil ambil data",
+		Data:    datatransaksi,
+	})
+}
