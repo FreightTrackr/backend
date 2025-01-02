@@ -58,6 +58,25 @@ func GetAllDocByFilter[T any](db *mongo.Database, collection string, filter bson
 	}
 	return doc, nil
 }
+
+func GetDocTesting[T any](db *mongo.Database, collection string, limit int, filter bson.M) (doc []T, err error) {
+	ctx := context.TODO()
+	findOptions := options.Find()
+	findOptions.SetLimit(int64(limit))
+	cur, err := db.Collection(collection).Find(ctx, filter, findOptions)
+	if err != nil {
+		fmt.Printf("GetAllDoc: %v\n", err)
+		return nil, err
+	}
+	defer cur.Close(ctx)
+	err = cur.All(ctx, &doc)
+	if err != nil {
+		fmt.Printf("GetAllDoc Cursor Err: %v\n", err)
+		return nil, err
+	}
+	return doc, nil
+}
+
 func GetAllDocByFilterWithPagination[T any](db *mongo.Database, collection string, page, limit int, filter bson.M) (doc []T, datacount models.DataCount, err error) {
 	ctx := context.TODO()
 	findOptions := options.Find()
