@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -19,7 +21,7 @@ var headers = []string{
 	"Authorization",
 }
 
-var Cors = cors.Config{
+var FiberCors = cors.Config{
 	AllowOrigins:     strings.Join(origins, ","),
 	AllowHeaders:     strings.Join(headers, ","),
 	AllowMethods:     "GET, POST, PUT, PATCH, DELETE",
@@ -28,10 +30,12 @@ var Cors = cors.Config{
 	MaxAge:           int((2 * time.Hour).Seconds()),
 }
 
-var CorsAllowAll = cors.Config{
-	AllowOrigins:  "*",
-	AllowHeaders:  strings.Join(headers, ","),
-	AllowMethods:  "GET, POST, PUT, PATCH, DELETE",
-	ExposeHeaders: "Content-Length",
-	MaxAge:        int((2 * time.Hour).Seconds()),
+func StdCors(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Enabling CORS")
+		w.Header().Set("Access-Control-Allow-Origin", "*") // Biarkan akses dari semua origin
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		next.ServeHTTP(w, r)
+	})
 }
