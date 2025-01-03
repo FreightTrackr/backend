@@ -11,15 +11,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func MongoConnect(mconn models.DBInfo) (db *mongo.Database) {
-	clientOptions := options.Client().ApplyURI((mconn.DBString))
+func MongoConnect(mconn models.DBInfo) *mongo.Database {
+	clientOptions := options.Client().ApplyURI(mconn.DBString)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		fmt.Printf("Error connecting to MongoDB: %v", err)
+		fmt.Printf("error connecting to MongoDB: %v", err)
 	}
-	defer client.Disconnect(context.TODO())
 	if err := client.Ping(context.TODO(), nil); err != nil {
-		fmt.Printf("Error pinging MongoDB: %v", err)
+		fmt.Printf("error pinging MongoDB: %v", err)
 	}
 	return client.Database(mconn.DBName)
 }
@@ -65,21 +64,27 @@ func GetAllDocByFilter[T any](db *mongo.Database, collection string, filter bson
 }
 
 func GetDocTesting[T any](db *mongo.Database, collection string, limit int, filter bson.M) (doc []T, err error) {
+	if err := db.Client().Ping(context.Background(), nil); err != nil {
+		return nil, fmt.Errorf("database connection error: %w", err)
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
 	findOptions := options.Find()
 	findOptions.SetLimit(int64(limit))
+
 	cur, err := db.Collection(collection).Find(ctx, filter, findOptions)
 	if err != nil {
-		fmt.Printf("GetAllDoc: %v\n", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to execute query: %w", err)
 	}
 	defer cur.Close(ctx)
+
 	err = cur.All(ctx, &doc)
 	if err != nil {
-		fmt.Printf("GetAllDoc Cursor Err: %v\n", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to decode documents: %w", err)
 	}
+
 	return doc, nil
 }
 
