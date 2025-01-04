@@ -1,4 +1,4 @@
-package helloworld
+package gcf
 
 import (
 	"net/http"
