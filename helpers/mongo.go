@@ -13,13 +13,7 @@ import (
 
 func MongoConnect(mconn models.DBInfo) *mongo.Database {
 	clientOptions := options.Client().ApplyURI(mconn.DBString)
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-	if err != nil {
-		fmt.Printf("error connecting to MongoDB: %v", err)
-	}
-	if err := client.Ping(context.TODO(), nil); err != nil {
-		fmt.Printf("error pinging MongoDB: %v", err)
-	}
+	client, _ := mongo.Connect(context.TODO(), clientOptions)
 	return client.Database(mconn.DBName)
 }
 
