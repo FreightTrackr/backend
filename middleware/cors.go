@@ -16,6 +16,8 @@ var origins = []string{
 var headers = []string{
 	"Content-Type",
 	"Authorization",
+	"Accept",
+	"Origin",
 }
 
 var FiberCors = cors.Config{
@@ -37,7 +39,7 @@ func StdCors(next http.Handler) http.Handler {
 			}
 		}
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, Origin")
 		next.ServeHTTP(w, r)
 	})
 }
