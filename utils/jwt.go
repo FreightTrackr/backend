@@ -272,3 +272,21 @@ func StdIsKantor(r *http.Request) bool {
 	role, ok := claims["role"].(string)
 	return ok && role == "kantor"
 }
+
+func StdIsPelanggan(r *http.Request) bool {
+	tokenString := r.Header.Get("Authorization")
+	parts := strings.Split(tokenString, " ")
+	if len(parts) != 2 {
+		return false
+	}
+	tokenString = parts[1]
+	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return ReadPublicKeyFromEnv("PUBLIC_KEY")
+	})
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return false
+	}
+	role, ok := claims["role"].(string)
+	return ok && role == "pelanggan"
+}
