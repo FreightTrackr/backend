@@ -237,6 +237,14 @@ func StdDecodeJWT(r *http.Request) (models.Users, error) {
 	return session, nil
 }
 
+func FiberIsAdmin(c *fiber.Ctx) bool {
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+
+	role := claims["role"].(string)
+	return role == "admin"
+}
+
 func StdIsAdmin(r *http.Request) bool {
 	tokenString := r.Header.Get("Authorization")
 	parts := strings.Split(tokenString, " ")
