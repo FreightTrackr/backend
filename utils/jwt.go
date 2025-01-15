@@ -253,6 +253,14 @@ func FiberIsKantor(c *fiber.Ctx) bool {
 	return role == "kantor"
 }
 
+func FiberIsPelanggan(c *fiber.Ctx) bool {
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+
+	role := claims["role"].(string)
+	return role == "pelanggan"
+}
+
 func StdIsAdmin(r *http.Request) bool {
 	tokenString := r.Header.Get("Authorization")
 	parts := strings.Split(tokenString, " ")
