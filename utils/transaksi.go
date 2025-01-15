@@ -57,6 +57,23 @@ func GetStatusDeliveredTransaksi(mongoenv *mongo.Database, collname, no_pend, ko
 	return helpers.GetAllDocByFilter[models.Transaksi](mongoenv, collname, filter)
 }
 
+func GetTipeCodTransaksi(mongoenv *mongo.Database, collname, no_pend, kode_pelanggan string, startDate, endDate time.Time) ([]models.Transaksi, error) {
+	filter := bson.M{
+		"tanggal_kirim": bson.M{"$gte": startDate, "$lte": endDate},
+		"tipe_cod":      "cod",
+	}
+	if no_pend != "" {
+		filter["$or"] = []bson.M{
+			{"no_pend_kirim": no_pend},
+			{"no_pend_terima": no_pend},
+		}
+	}
+	if kode_pelanggan != "" {
+		filter["kode_pelanggan"] = kode_pelanggan
+	}
+	return helpers.GetAllDocByFilter[models.Transaksi](mongoenv, collname, filter)
+}
+
 func FindTransaksi(mongoenv *mongo.Database, collname string, datatransaksi models.Transaksi) models.Transaksi {
 	filter := bson.M{"no_resi": datatransaksi.No_Resi}
 	return helpers.GetOneDoc[models.Transaksi](mongoenv, collname, filter)
