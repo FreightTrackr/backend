@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -429,14 +428,7 @@ func StdEditUser(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
 	var user models.Users
 
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
-			Status:  http.StatusBadRequest,
-			Message: "Error parsing application/json: " + err.Error(),
-		})
-		return
-	}
+	utils.ParseBody(w, r, &user)
 
 	if user.Username == "" || user.Nama == "" || user.No_Telp == "" || user.Email == "" || user.Role == "" {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
@@ -489,5 +481,26 @@ func StdEditUser(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
 		Status:  http.StatusOK,
 		Message: "Berhasil update",
+	})
+}
+
+func StdHapusUser(w http.ResponseWriter, r *http.Request) {
+	mconn := utils.SetConnection()
+	var user models.Users
+
+	utils.ParseBody(w, r, &user)
+
+	if !utils.UsernameExists(mconn, collusers, user) {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Akun tidak ditemukan",
+		})
+		return
+	}
+
+	utils.DeleteUser(mconn, collusers, user)
+	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
+		Status:  http.StatusOK,
+		Message: "Berhasil hapus user",
 	})
 }
