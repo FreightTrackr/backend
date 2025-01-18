@@ -12,6 +12,7 @@ func StdRoute(router *http.ServeMux) {
 	router.HandleFunc("POST /login", controllers.StdLogin)
 	router.Handle("GET /users", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaUser)))
 	router.Handle("PUT /users", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdEditUser)))
+	router.Handle("DELETE /users", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdHapusUser)))
 	router.Handle("GET /session", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdSession)))
 	router.Handle("GET /kantor", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaKantor)))
 	router.Handle("GET /pelanggan", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaPelanggan)))
