@@ -60,6 +60,7 @@ func GetStatusDeliveredTransaksi(mongoenv *mongo.Database, collname, no_pend, ko
 func GetTipeCodTransaksi(mongoenv *mongo.Database, collname, no_pend, kode_pelanggan string, startDate, endDate time.Time) ([]models.Transaksi, error) {
 	filter := bson.M{
 		"tanggal_kirim": bson.M{"$gte": startDate, "$lte": endDate},
+		"status":        "delivered",
 		"tipe_cod":      "cod",
 	}
 	if no_pend != "" {
