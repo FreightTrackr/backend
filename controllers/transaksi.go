@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"encoding/csv"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -647,6 +649,124 @@ func StdAmbilTransaksiDenganTipeCOD(w http.ResponseWriter, r *http.Request) {
 		Message: "Berhasil ambil data",
 		Data:    datatransaksi,
 	})
+}
+
+func StdExportCSV(w http.ResponseWriter, r *http.Request) {
+	mconn := utils.SetConnection()
+	startDateStr := utils.GetUrlQuery(r, "start_date", "")
+	endDateStr := utils.GetUrlQuery(r, "end_date", "")
+	no_pend := utils.GetUrlQuery(r, "no_pend", "")
+	kode_pelanggan := utils.GetUrlQuery(r, "kode_pelanggan", "")
+
+	if startDateStr == "" || endDateStr == "" {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Masukkan parameter tanggal",
+		})
+		return
+	}
+	var startDate, endDate time.Time
+	startDate, err := utils.ParseDate(startDateStr, false)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Format start_date tidak valid: " + err.Error(),
+		})
+		return
+	}
+	endDate, err = utils.ParseDate(endDateStr, true)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Format end_date tidak valid: " + err.Error(),
+		})
+		return
+	}
+	datatransaksi, err := utils.GetAllTransaksi(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
+	if err != nil {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "GetAllDoc error: " + err.Error(),
+		})
+		return
+	}
+	if datatransaksi == nil {
+		utils.WriteJSONResponse(w, http.StatusNotFound, models.Pesan{
+			Status:  http.StatusNotFound,
+			Message: "Data transaksi tidak ditemukan",
+		})
+		return
+	}
+
+	// Set CSV response headers
+	w.Header().Set("Content-Type", "text/csv")
+	w.Header().Set("Content-Disposition", `attachment; filename="transaksi.csv"`)
+
+	writer := csv.NewWriter(w)
+	defer writer.Flush()
+
+	// Menulis header CSV
+	header := []string{
+		"id", "no_resi", "layanan", "isi_kiriman", "nama_pengirim", "alamat_pengirim", "kode_pos_pengirim",
+		"kota_asal", "nama_penerima", "alamat_penerima", "kode_pos_penerima", "kota_tujuan",
+		"berat_kiriman", "volumetrik", "nilai_barang", "biaya_dasar", "biaya_pajak",
+		"biaya_asuransi", "total_biaya", "tanggal_kirim", "tanggal_antaran_pertama",
+		"tanggal_terima", "status", "tipe_cod", "status_cod", "sla", "aktual_sla",
+		"status_sla", "no_pend_kirim", "no_pend_terima", "kode_pelanggan", "created_by", "id_history",
+	}
+	if err := writer.Write(header); err != nil {
+		utils.WriteJSONResponse(w, http.StatusInternalServerError, models.Pesan{
+			Status:  http.StatusInternalServerError,
+			Message: "Error writing CSV header: " + err.Error(),
+		})
+		return
+	}
+
+	// Menulis data transaksi ke CSV
+	for _, transaksi := range datatransaksi {
+		row := []string{
+			transaksi.ID.Hex(),
+			transaksi.No_Resi,
+			transaksi.Layanan,
+			transaksi.Isi_Kiriman,
+			transaksi.Nama_Pengirim,
+			transaksi.Alamat_Pengirim,
+			strconv.Itoa(transaksi.Kode_Pos_Pengirim),
+			transaksi.Kota_Asal,
+			transaksi.Nama_Penerima,
+			transaksi.Alamat_Penerima,
+			strconv.Itoa(transaksi.Kode_Pos_Penerima),
+			transaksi.Kota_Tujuan,
+			fmt.Sprint(transaksi.Berat_Kiriman),
+			fmt.Sprint(transaksi.Volumetrik),
+			strconv.Itoa(transaksi.Nilai_Barang),
+			strconv.Itoa(transaksi.Biaya_Dasar),
+			strconv.Itoa(transaksi.Biaya_Pajak),
+			strconv.Itoa(transaksi.Biaya_Asuransi),
+			strconv.Itoa(transaksi.Total_Biaya),
+			transaksi.Tanggal_Kirim.Time().String(),
+			transaksi.Tanggal_Antaran_Pertama.Time().String(),
+			transaksi.Tanggal_Terima.Time().String(),
+			transaksi.Status,
+			transaksi.Tipe_Cod,
+			transaksi.Status_Cod,
+			strconv.Itoa(transaksi.Sla),
+			strconv.Itoa(transaksi.Aktual_Sla),
+			fmt.Sprint(transaksi.Status_Sla),
+			transaksi.No_Pend_Kirim,
+			transaksi.No_Pend_Terima,
+			transaksi.Kode_Pelanggan,
+			transaksi.Created_By.Username,
+			transaksi.ID_History,
+		}
+		if err := writer.Write(row); err != nil {
+			utils.WriteJSONResponse(w, http.StatusInternalServerError, models.Pesan{
+				Status:  http.StatusInternalServerError,
+				Message: "Error writing CSV row: " + err.Error(),
+			})
+			return
+		}
+	}
 }
 
 func StdTesting(w http.ResponseWriter, r *http.Request) {
