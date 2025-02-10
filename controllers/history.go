@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/FreightTrackr/backend/models"
@@ -33,5 +34,16 @@ func AmbilSemuaHistory(c *fiber.Ctx) error {
 		Data:       datahistory,
 		Data_Count: &datacount,
 		Page:       page,
+	})
+}
+
+func StdAmbilHistory(w http.ResponseWriter, r *http.Request) {
+	mconn := utils.SetConnection()
+	var history models.History
+	datahistory := utils.FindHistory(mconn, collhistory, history)
+	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
+		Status:  http.StatusOK,
+		Message: "Berhasil ambil data",
+		Data:    datahistory,
 	})
 }
