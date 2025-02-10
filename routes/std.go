@@ -10,6 +10,7 @@ import (
 func StdRoute(router *http.ServeMux) {
 	router.HandleFunc("POST /register", controllers.StdRegister)
 	router.HandleFunc("POST /login", controllers.StdLogin)
+	router.HandleFunc("GET /lacak", controllers.StdAmbilHistory)
 	router.Handle("GET /users", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaUser)))
 	router.Handle("PUT /users", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdEditUser)))
 	router.Handle("DELETE /users", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdHapusUser)))
