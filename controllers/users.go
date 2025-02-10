@@ -252,7 +252,7 @@ func StdRegister(w http.ResponseWriter, r *http.Request) {
 
 	utils.ParseBody(w, r, &user)
 
-	if user.Username == "" || user.Password == "" || user.Nama == "" || user.No_Telp == "" || user.Email == "" || user.Role == "" {
+	if user.Username == "" || user.Password == "" || user.Nama == "" || user.No_Telp == "" || user.Email == "" {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
 			Message: "Field wajib diisi",
@@ -288,14 +288,6 @@ func StdRegister(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
 			Message: "Nama tidak boleh lebih dari 55 karakter",
-		})
-		return
-	}
-
-	if user.Role != "admin" && user.Role != "kantor" && user.Role != "pelanggan" {
-		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
-			Status:  http.StatusBadRequest,
-			Message: "Role tidak tersedia",
 		})
 		return
 	}
@@ -438,18 +430,18 @@ func StdEditUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(user.Password) < 8 || len(user.Password) > 20 {
-		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
-			Status:  http.StatusBadRequest,
-			Message: "Password harus antara 8 sampai 20 karakter",
-		})
-		return
-	}
-
 	if len(user.Nama) > 55 {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
 			Message: "Nama tidak boleh lebih dari 55 karakter",
+		})
+		return
+	}
+
+	if user.Role != "admin" && user.Role != "kantor" && user.Role != "pelanggan" {
+		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+			Status:  http.StatusBadRequest,
+			Message: "Role tidak tersedia",
 		})
 		return
 	}
@@ -463,6 +455,13 @@ func StdEditUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user.Password != "" {
+		if len(user.Password) < 8 || len(user.Password) > 20 {
+			utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
+				Status:  http.StatusBadRequest,
+				Message: "Password harus antara 8 sampai 20 karakter",
+			})
+			return
+		}
 		hash, hashErr := helpers.HashPassword(user.Password)
 		if hashErr != nil {
 			utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
@@ -477,7 +476,7 @@ func StdEditUser(w http.ResponseWriter, r *http.Request) {
 		user.Password = datauser.Password
 	}
 
-	utils.InsertUser(mconn, collusers, user)
+	utils.UpdateUser(mconn, collusers, user)
 	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
 		Status:  http.StatusOK,
 		Message: "Berhasil update",
