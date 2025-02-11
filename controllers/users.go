@@ -358,6 +358,15 @@ func StdLogin(w http.ResponseWriter, r *http.Request) {
 
 func StdAmbilSemuaUser(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
+	var session models.Users
+	session, _ = utils.StdDecodeJWT(r)
+	if session.Role != "admin" {
+		utils.WriteJSONResponse(w, http.StatusForbidden, models.Pesan{
+			Status:  http.StatusForbidden,
+			Message: "Anda tidak memiliki akses",
+		})
+		return
+	}
 	page, err := strconv.Atoi(utils.GetUrlQuery(r, "page", "1"))
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
@@ -419,6 +428,15 @@ func StdSession(w http.ResponseWriter, r *http.Request) {
 func StdEditUser(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
 	var user models.Users
+	var session models.Users
+	session, _ = utils.StdDecodeJWT(r)
+	if session.Role != "admin" {
+		utils.WriteJSONResponse(w, http.StatusForbidden, models.Pesan{
+			Status:  http.StatusForbidden,
+			Message: "Anda tidak memiliki akses",
+		})
+		return
+	}
 
 	utils.ParseBody(w, r, &user)
 
@@ -486,6 +504,15 @@ func StdEditUser(w http.ResponseWriter, r *http.Request) {
 func StdHapusUser(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
 	var user models.Users
+	var session models.Users
+	session, _ = utils.StdDecodeJWT(r)
+	if session.Role != "admin" {
+		utils.WriteJSONResponse(w, http.StatusForbidden, models.Pesan{
+			Status:  http.StatusForbidden,
+			Message: "Anda tidak memiliki akses",
+		})
+		return
+	}
 
 	utils.ParseBody(w, r, &user)
 
