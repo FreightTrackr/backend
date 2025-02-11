@@ -134,6 +134,15 @@ func DummyTransaksiGenerator(n int, mconn *mongo.Database) (string, error) {
 	for i := 0; i < n; i++ {
 		var transaksi models.Transaksi
 
+		no_pend_kirim := 400010 + r.Intn((410000-400010)/10+1)*10
+		var no_pend_terima int
+		for {
+			no_pend_terima = 400010 + r.Intn((410000-400010)/10+1)*10
+			if no_pend_terima != no_pend_kirim {
+				break
+			}
+		}
+
 		alamatpengirim := generator.GenerateRandomAlamat()
 		alamatpenerima := generator.GenerateRandomAlamat()
 
