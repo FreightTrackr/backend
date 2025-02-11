@@ -18,6 +18,7 @@ func StdRoute(router *http.ServeMux) {
 	router.Handle("GET /kantor", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaKantor)))
 	router.Handle("GET /pelanggan", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaPelanggan)))
 	router.Handle("GET /transaksi", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaTransaksiDenganPagination)))
+	router.Handle("GET /satutransaksi", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilTransaksi)))
 	router.Handle("GET /semuatransaksi", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilSemuaTransaksi)))
 	router.Handle("GET /transaksidelivered", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilTransaksiDenganStatusDelivered)))
 	router.Handle("GET /transaksicod", middleware.IsAuthenticated(http.HandlerFunc(controllers.StdAmbilTransaksiDenganTipeCOD)))
