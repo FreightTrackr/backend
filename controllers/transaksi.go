@@ -423,6 +423,8 @@ func FiberTesting(c *fiber.Ctx) error {
 
 func StdAmbilSemuaTransaksiDenganPagination(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
+	var session models.Users
+	session, _ = utils.StdDecodeJWT(r)
 	page, err := strconv.Atoi(utils.GetUrlQuery(r, "page", "1"))
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
@@ -468,7 +470,16 @@ func StdAmbilSemuaTransaksiDenganPagination(w http.ResponseWriter, r *http.Reque
 		})
 		return
 	}
-	datatransaksi, datacount, err := utils.GetAllTransaksiWithPagination(mconn, colltransaksi, no_pend, kode_pelanggan, page, limit, startDate, endDate)
+	var datatransaksi []models.Transaksi
+	var datacount models.DataCount
+	if session.Role == "kantor" {
+		datatransaksi, datacount, err = utils.GetAllTransaksiWithPagination(mconn, colltransaksi, session.No_Pend, "", page, limit, startDate, endDate)
+	} else if session.Role == "pelanggan" {
+		datatransaksi, datacount, err = utils.GetAllTransaksiWithPagination(mconn, colltransaksi, "", session.Kode_Pelanggan, page, limit, startDate, endDate)
+	} else if session.Role == "admin" {
+		datatransaksi, datacount, err = utils.GetAllTransaksiWithPagination(mconn, colltransaksi, no_pend, kode_pelanggan, page, limit, startDate, endDate)
+	}
+
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
@@ -494,6 +505,8 @@ func StdAmbilSemuaTransaksiDenganPagination(w http.ResponseWriter, r *http.Reque
 
 func StdAmbilSemuaTransaksi(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
+	var session models.Users
+	session, _ = utils.StdDecodeJWT(r)
 	startDateStr := utils.GetUrlQuery(r, "start_date", "")
 	endDateStr := utils.GetUrlQuery(r, "end_date", "")
 	no_pend := utils.GetUrlQuery(r, "no_pend", "")
@@ -523,7 +536,14 @@ func StdAmbilSemuaTransaksi(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	datatransaksi, err := utils.GetAllTransaksi(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
+	var datatransaksi []models.Transaksi
+	if session.Role == "kantor" {
+		datatransaksi, err = utils.GetAllTransaksi(mconn, colltransaksi, session.No_Pend, "", startDate, endDate)
+	} else if session.Role == "pelanggan" {
+		datatransaksi, err = utils.GetAllTransaksi(mconn, colltransaksi, "", session.Kode_Pelanggan, startDate, endDate)
+	} else if session.Role == "admin" {
+		datatransaksi, err = utils.GetAllTransaksi(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
+	}
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
@@ -547,6 +567,8 @@ func StdAmbilSemuaTransaksi(w http.ResponseWriter, r *http.Request) {
 
 func StdAmbilTransaksiDenganStatusDelivered(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
+	var session models.Users
+	session, _ = utils.StdDecodeJWT(r)
 	startDateStr := utils.GetUrlQuery(r, "start_date", "")
 	endDateStr := utils.GetUrlQuery(r, "end_date", "")
 	no_pend := utils.GetUrlQuery(r, "no_pend", "")
@@ -576,7 +598,14 @@ func StdAmbilTransaksiDenganStatusDelivered(w http.ResponseWriter, r *http.Reque
 		})
 		return
 	}
-	datatransaksi, err := utils.GetStatusDeliveredTransaksi(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
+	var datatransaksi []models.Transaksi
+	if session.Role == "kantor" {
+		datatransaksi, err = utils.GetStatusDeliveredTransaksi(mconn, colltransaksi, session.No_Pend, "", startDate, endDate)
+	} else if session.Role == "pelanggan" {
+		datatransaksi, err = utils.GetStatusDeliveredTransaksi(mconn, colltransaksi, "", session.Kode_Pelanggan, startDate, endDate)
+	} else if session.Role == "admin" {
+		datatransaksi, err = utils.GetStatusDeliveredTransaksi(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
+	}
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
@@ -600,6 +629,8 @@ func StdAmbilTransaksiDenganStatusDelivered(w http.ResponseWriter, r *http.Reque
 
 func StdAmbilTransaksiDenganTipeCOD(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
+	var session models.Users
+	session, _ = utils.StdDecodeJWT(r)
 	startDateStr := utils.GetUrlQuery(r, "start_date", "")
 	endDateStr := utils.GetUrlQuery(r, "end_date", "")
 	no_pend := utils.GetUrlQuery(r, "no_pend", "")
@@ -629,7 +660,14 @@ func StdAmbilTransaksiDenganTipeCOD(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	datatransaksi, err := utils.GetTipeCodTransaksi(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
+	var datatransaksi []models.Transaksi
+	if session.Role == "kantor" {
+		datatransaksi, err = utils.GetTipeCodTransaksi(mconn, colltransaksi, session.No_Pend, "", startDate, endDate)
+	} else if session.Role == "pelanggan" {
+		datatransaksi, err = utils.GetTipeCodTransaksi(mconn, colltransaksi, "", session.Kode_Pelanggan, startDate, endDate)
+	} else if session.Role == "admin" {
+		datatransaksi, err = utils.GetTipeCodTransaksi(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
+	}
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
@@ -653,6 +691,8 @@ func StdAmbilTransaksiDenganTipeCOD(w http.ResponseWriter, r *http.Request) {
 
 func StdExportCSV(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
+	var session models.Users
+	session, _ = utils.StdDecodeJWT(r)
 	startDateStr := utils.GetUrlQuery(r, "start_date", "")
 	endDateStr := utils.GetUrlQuery(r, "end_date", "")
 	no_pend := utils.GetUrlQuery(r, "no_pend", "")
@@ -682,7 +722,14 @@ func StdExportCSV(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	datatransaksi, err := utils.GetAllTransaksi(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
+	var datatransaksi []models.Transaksi
+	if session.Role == "kantor" {
+		datatransaksi, err = utils.GetAllTransaksi(mconn, colltransaksi, session.No_Pend, "", startDate, endDate)
+	} else if session.Role == "pelanggan" {
+		datatransaksi, err = utils.GetAllTransaksi(mconn, colltransaksi, "", session.Kode_Pelanggan, startDate, endDate)
+	} else if session.Role == "admin" {
+		datatransaksi, err = utils.GetAllTransaksi(mconn, colltransaksi, no_pend, kode_pelanggan, startDate, endDate)
+	}
 	if err != nil {
 		utils.WriteJSONResponse(w, http.StatusBadRequest, models.Pesan{
 			Status:  http.StatusBadRequest,
