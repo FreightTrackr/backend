@@ -818,7 +818,9 @@ func StdExportCSV(w http.ResponseWriter, r *http.Request) {
 
 func StdAmbilTransaksi(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
+	no_resi := utils.GetUrlQuery(r, "no_resi", "")
 	var transaksi models.Transaksi
+	transaksi.No_Resi = no_resi
 	datatransaksi := utils.FindTransaksi(mconn, colltransaksi, transaksi)
 	var session models.Users
 	session, _ = utils.StdDecodeJWT(r)
