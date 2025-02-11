@@ -816,6 +816,45 @@ func StdExportCSV(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func StdAmbilTransaksi(w http.ResponseWriter, r *http.Request) {
+	mconn := utils.SetConnection()
+	var transaksi models.Transaksi
+	datatransaksi := utils.FindTransaksi(mconn, colltransaksi, transaksi)
+	var session models.Users
+	session, _ = utils.StdDecodeJWT(r)
+	if session.Role != "admin" && session.Role != "kantor" && session.Role != "pelanggan" {
+		utils.WriteJSONResponse(w, http.StatusForbidden, models.Pesan{
+			Status:  http.StatusForbidden,
+			Message: "Anda tidak memiliki akses",
+		})
+		return
+	}
+	if session.Role == "kantor" {
+		if session.No_Pend != datatransaksi.No_Pend_Kirim && session.No_Pend != datatransaksi.No_Pend_Terima {
+			utils.WriteJSONResponse(w, http.StatusForbidden, models.Pesan{
+				Status:  http.StatusForbidden,
+				Message: "Anda tidak memiliki akses",
+			})
+			return
+		}
+	}
+	if session.Role == "pelanggan" {
+		if session.Kode_Pelanggan != datatransaksi.Kode_Pelanggan {
+			utils.WriteJSONResponse(w, http.StatusForbidden, models.Pesan{
+				Status:  http.StatusForbidden,
+				Message: "Anda tidak memiliki akses",
+			})
+			return
+		}
+	}
+
+	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
+		Status:  http.StatusOK,
+		Message: "Berhasil ambil data",
+		Data:    datatransaksi,
+	})
+}
+
 func StdTesting(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
 	limit, err := strconv.Atoi(utils.GetUrlQuery(r, "limit", "10"))
