@@ -21,7 +21,7 @@ func TestRegisterDummyUsers(t *testing.T) {
 func TestGenerateDataDummyTransaksi(t *testing.T) {
 	middleware.LoadEnv("../.env")
 	mconn := utils.SetConnection()
-	apalah, err := utils.DummyTransaksiGenerator(50, mconn)
+	apalah, err := utils.DummyTransaksiGenerator(mconn)
 	if err != nil {
 		t.Fatalf("Error generating dummy users: %v", err)
 	}
@@ -48,7 +48,7 @@ func TestGenerateDataDummyPelanggan(t *testing.T) {
 func TestGenerateDataDummyHistory(t *testing.T) {
 	middleware.LoadEnv("../.env")
 	mconn := utils.SetConnection()
-	apalah, err := utils.DummyHistoryGenerator(50, mconn)
+	apalah, err := utils.DummyHistoryGenerator(mconn)
 	if err != nil {
 		t.Fatalf("Error generating dummy users: %v", err)
 	}

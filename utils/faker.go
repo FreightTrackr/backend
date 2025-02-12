@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -114,7 +115,7 @@ func generateRandomDate(start time.Time, end time.Time) time.Time {
 	return start.Add(randDuration)
 }
 
-func DummyTransaksiGenerator(n int, mconn *mongo.Database) (string, error) {
+func DummyTransaksiGenerator(mconn *mongo.Database) (string, error) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	layanan := []string{"Nextday", "Reguler"}
 	isi_kiriman := []string{"Dokumen", "Paket"}
@@ -131,7 +132,7 @@ func DummyTransaksiGenerator(n int, mconn *mongo.Database) (string, error) {
 			break
 		}
 	}
-	for i := 0; i < n; i++ {
+	for i := 0; i < 10000; i++ {
 		var transaksi models.Transaksi
 
 		no_pend_kirim := 400010 + r.Intn((410000-400010)/10+1)*10
@@ -223,12 +224,12 @@ func DummyTransaksiGenerator(n int, mconn *mongo.Database) (string, error) {
 		transaksi.No_Pend_Terima = strconv.Itoa(no_pend_terima)
 		transaksi.Kode_Pelanggan = pelanggan[r.Intn(len(pelanggan))].Kode_Pelanggan
 		transaksi.Created_By.Username = faker.Username()
-		transaksi.ID_History = faker.UUIDDigit()
+		transaksi.ID_History = fmt.Sprintf("hstr%05d", i+1)
 
 		InsertTransaksi(mconn, "transaksi", transaksi)
 	}
 
-	return "Bergasil generate " + strconv.Itoa(n) + " data", nil
+	return "Bergasil generate 10,000 data", nil
 }
 
 func DummyKantorGenerator(mconn *mongo.Database) (string, error) {
@@ -276,20 +277,21 @@ func DummyPelangganGenerator(mconn *mongo.Database) (string, error) {
 	return "Bergasil generate " + strconv.Itoa(len(pelanggan)) + " data", nil
 }
 
-func DummyHistoryGenerator(n int, mconn *mongo.Database) (string, error) {
+func DummyHistoryGenerator(mconn *mongo.Database) (string, error) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	usernames := []string{"user1", "user2", "user3", "user4"} // Example usernames
 
-	for i := 0; i < n; i++ {
+	for i := 1; i <= 10000; i++ {
 		var history models.History
-		history.ID_History = fakeDigit() // Assuming utils.RandomString generates a random string
+		history.ID_History = fmt.Sprintf("hstr%05d", i) // Generate ID_History dari hstr00001 hingga hstr10000
 
-		for j := 0; j < r.Intn(5)+1; j++ { // Generate between 1 and 5 status updates
+		lokasiCount := r.Intn(6) + 3 // Generate antara 3 hingga 8 status updates
+		for j := 0; j < lokasiCount; j++ {
 			var lokasi models.Lokasi
 			lokasi.Status = randomStatus()
 			lokasi.Timestamp = time.Now()
-			lokasi.Coordinate = []float64{r.Float64() * 180.0, r.Float64() * 180.0}
-			lokasi.Catatan = "Paket masuk gudang"
+			lokasi.Coordinate = []float64{r.Float64()*180.0 - 90.0, r.Float64()*360.0 - 180.0} // Latitude [-90, 90], Longitude [-180, 180]
+			lokasi.Catatan = getStatusNote(lokasi.Status)
 			lokasi.Username = usernames[r.Intn(len(usernames))]
 
 			history.Lokasi = append(history.Lokasi, lokasi)
@@ -298,17 +300,29 @@ func DummyHistoryGenerator(n int, mconn *mongo.Database) (string, error) {
 		InsertHistory(mconn, "history", history)
 	}
 
-	return "Berhasil generate " + strconv.Itoa(n) + " data", nil
+	return "Berhasil generate 10,000 data", nil
 }
 
 func randomStatus() string {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	status := []string{"delivered", "canceled", "returned", "inWarehouse", "inVehicle", "failed"}
-	return status[r.Intn(len(status))]
+	return status[rand.Intn(len(status))] // Gunakan rand.Intn() langsung
 }
 
-// Fungsi untuk menghasilkan digit palsu
-func fakeDigit() string {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	return strconv.Itoa(r.Intn(1000000000))
+func getStatusNote(status string) string {
+	switch status {
+	case "delivered":
+		return "Paket telah dikirim ke penerima"
+	case "canceled":
+		return "Pengiriman dibatalkan"
+	case "returned":
+		return "Paket dikembalikan ke pengirim"
+	case "inWarehouse":
+		return "Paket masuk gudang"
+	case "inVehicle":
+		return "Paket dalam perjalanan"
+	case "failed":
+		return "Pengiriman gagal"
+	default:
+		return "Status tidak diketahui"
+	}
 }
