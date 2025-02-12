@@ -39,9 +39,10 @@ func AmbilSemuaHistory(c *fiber.Ctx) error {
 
 func StdAmbilHistory(w http.ResponseWriter, r *http.Request) {
 	mconn := utils.SetConnection()
-	id_history := utils.GetUrlQuery(r, "id_history", "")
+	no_resi := utils.GetUrlQuery(r, "no_resi", "")
+	datatransaksi := utils.FindTransaksi(mconn, "transaksi", models.Transaksi{No_Resi: no_resi})
 	var history models.History
-	history.ID_History = id_history
+	history.ID_History = datatransaksi.ID_History
 	datahistory := utils.FindHistory(mconn, collhistory, history)
 	utils.WriteJSONResponse(w, http.StatusOK, models.Pesan{
 		Status:  http.StatusOK,
